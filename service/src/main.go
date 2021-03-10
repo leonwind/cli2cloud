@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./api"
+	api "github.com/leonwind/cli2cloud/api"
 	"log"
 	"net/http"
 )
