@@ -1,12 +1,25 @@
 package main
 
 import (
-	api "github.com/leonwind/cli2cloud/api"
+	"github.com/gorilla/mux"
+	"github.com/leonwind/cli2cloud/api"
 	"log"
 	"net/http"
 )
 
+func handleRequests() {
+	router := mux.NewRouter()
+	apiRouter := router.PathPrefix("/api").Subrouter()
+
+	apiRouter.HandleFunc("/ping", api.Ping).Methods("GET")
+	apiRouter.HandleFunc("/new", api.CreateNewID).Methods("GET")
+	apiRouter.HandleFunc("/data/{id}", api.SendData).Methods("POST")
+	apiRouter.HandleFunc("/data/{id}", api.QueryData).Methods("GET")
+
+	log.Fatal(http.ListenAndServe(":8080", router))
+
+}
+
 func main() {
-	http.HandleFunc("/", api.Ping)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	handleRequests()
 }
