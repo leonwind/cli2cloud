@@ -2,7 +2,7 @@ package api
 
 import (
 	"crypto/md5"
-	"math"
+	"math/big"
 	"net/http"
 	"strconv"
 	"time"
@@ -19,32 +19,16 @@ func CreateNewID(w http.ResponseWriter, request *http.Request) {
 	hash := md5.Sum([]byte(ipAddr + timestamp))
 	// encode hash into base62 and use the first 5 characters as the unique id
 	// 62^5 = 916132832 different unique ids
-	uniqueID := encodeBase62(string(hash[:]))[:5]
+	uniqueID := encodeBase62(hash)[:5]
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(uniqueID))
 }
 
-func encodeBase62(toEncode string) string {
-	var num int
-	for _, c := range toEncode {
-		num = num * 10 + int(c)
-	}
-	// prevent negative numbers
-	num = int(math.Abs(float64(num)))
-
-	alphabet := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	encoded := make([]byte, 0)
-	base := 62
-
-	for num > 0 {
-		r := math.Mod(float64(num), float64(base))
-		num /= base
-
-		encoded = append([]byte{alphabet[int(r)]}, encoded...)
-	}
-
-	return string(encoded)
+func encodeBase62(toEncode [16]byte) string {
+	encoded := big.NewInt(0)
+	encoded.SetBytes(toEncode[:])
+	return encoded.Text(62)
 }
 
 // Send new command line output from the client
