@@ -12,6 +12,7 @@ func handleRequests() {
 	apiRouter := router.PathPrefix("/api").Subrouter()
 
 	apiRouter.HandleFunc("/ping", api.Ping).Methods("GET")
+	// initialize a new cmd client by creating a unique ID
 	apiRouter.HandleFunc("/new", api.CreateNewID).Methods("GET")
 	// receive the newest command line updates
 	apiRouter.HandleFunc("/data/{id}", api.ReceiveData).Methods("POST")

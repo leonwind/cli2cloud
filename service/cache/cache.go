@@ -1,4 +1,4 @@
-package rdb
+package cache
 
 import (
 	"context"

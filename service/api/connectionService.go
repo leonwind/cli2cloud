@@ -2,7 +2,7 @@ package api
 
 import (
 	"crypto/md5"
-	"github.com/leonwind/cli2cloud/rdb"
+	"github.com/leonwind/cli2cloud/cache"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -16,10 +16,10 @@ func CreateNewID(w http.ResponseWriter, request *http.Request) {
 	ipAddr := request.RemoteAddr
 	uniqueID := createUniqueID(ipAddr)
 
-	for rdb.Cache.Exists(rdb.Ctx, uniqueID).Val() == 1 {
+	for cache.Cache.Exists(cache.Ctx, uniqueID).Val() == 1 {
 		uniqueID = createUniqueID(ipAddr)
 	}
-	rdb.Cache.Set(rdb.Ctx, uniqueID, false, 0)
+	cache.Cache.Set(cache.Ctx, uniqueID, false, 0)
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(uniqueID))
