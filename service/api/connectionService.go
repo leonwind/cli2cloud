@@ -2,8 +2,8 @@ package api
 
 import (
 	"crypto/md5"
-	"fmt"
 	"github.com/leonwind/cli2cloud/cache"
+	"log"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -23,7 +23,7 @@ func CreateNewID(w http.ResponseWriter, request *http.Request) {
 	cache.Cache.Set(cache.Ctx, uniqueID, false, 0)
 
 	keys := cache.Cache.Keys(cache.Ctx, "*")
-	fmt.Println(keys)
+	log.Println(keys)
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(uniqueID))

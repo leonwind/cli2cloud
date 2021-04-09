@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/leonwind/cli2cloud/api"
 	"log"
@@ -24,6 +23,6 @@ func handleRequests() {
 }
 
 func main() {
-	fmt.Println("Started server")
+	log.Println("Started server...")
 	handleRequests()
 }
