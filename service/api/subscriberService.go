@@ -22,15 +22,19 @@ func SendData(w http.ResponseWriter, request *http.Request) {
 // consume to a Kafka topic as part of the Publish-Subscriber pattern
 func consume(topic string, offset int64) string {
 	r := kafka.NewReader(kafka.ReaderConfig{
-		Brokers: []string{"localhost:9092"},
-		Topic: topic,
+		Brokers:   []string{"kafka:9092"},
+		Topic:     topic,
 		Partition: 0,
+		MinBytes: 1,
+		MaxBytes: 100,
 	})
 
 	message, err := r.ReadMessage(context.Background())
 	if err != nil {
 		log.Fatal("Failed to read message:", err)
 	}
+
+	fmt.Println("Received message")
 
 	err = r.Close()
 	if err != nil {

@@ -1,6 +1,5 @@
-version: '3.0'
+version: "3.0"
 services:
-
     zookeeper:
         image: wurstmeister/zookeeper
         expose: 
@@ -30,3 +29,13 @@ services:
         ports:
             - "6379:6379"
         container_name: redis
+
+    cli2cloud-service:
+        depends_on:
+            - kafka
+            - redis
+        build: ./service
+        ports:
+            - "8080:8080"
+        container_name: cli2cloud-service
+
