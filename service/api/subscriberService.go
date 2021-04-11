@@ -21,10 +21,17 @@ func SendData(w http.ResponseWriter, request *http.Request) {
 
 // consume to a Kafka topic as part of the Publish-Subscriber pattern
 func consume(topic string, offset int64) []byte {
-	var connection, _ = sarama.NewConsumer([]string{"kafka:9092"}, sarama.NewConfig())
-	partitions, _ := connection.Partitions(topic)
-	consumer, err := connection.ConsumePartition(topic, partitions[0], offset)
+	connection, err := sarama.NewConsumer([]string{"kafka:9092"}, sarama.NewConfig())
+	if err != nil {
+		log.Fatal("Could not connect to kafka:", err)
+	}
 
+	partitions, err := connection.Partitions(topic)
+	if err != nil {
+		log.Fatal("Could not fetch partitions of topic", topic, ":", err)
+	}
+
+	consumer, err := connection.ConsumePartition(topic, partitions[0], offset)
 	if err != nil {
 		log.Fatal("Could not consume partition:", err)
 	}

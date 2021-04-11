@@ -18,7 +18,6 @@ func ReceiveData(w http.ResponseWriter, request *http.Request) {
 
 	var m msg
 	err := json.NewDecoder(request.Body).Decode(&m)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
@@ -29,12 +28,15 @@ func ReceiveData(w http.ResponseWriter, request *http.Request) {
 
 // publish the received data to Kafka part of the Publish-subscriber pattern
 func publish(topic string, message string) {
+	producer, err := sarama.NewAsyncProducer([]string{"kafka:9092"}, sarama.NewConfig())
+	if err != nil {
+		log.Fatal("Could not create new producer:", err)
+	}
+
 	msg := &sarama.ProducerMessage{
 		Topic:     topic,
 		Value:     sarama.StringEncoder(message),
 	}
-
-	producer, _ := sarama.NewAsyncProducer([]string{"kafka:9092"}, sarama.NewConfig())
 
 	select {
 		case producer.Input() <- msg:
