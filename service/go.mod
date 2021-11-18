@@ -1,9 +1,9 @@
-module github.com/leonwind/cli2cloud
+module github.com/leonwind/cli2cloud/server
 
 go 1.16
 
 require (
-	github.com/Shopify/sarama v1.28.0
-	github.com/go-redis/redis/v8 v8.7.1
-	github.com/gorilla/mux v1.8.0
+	github.com/stretchr/testify v1.7.0 // indirect
+	google.golang.org/grpc v1.42.0
+	google.golang.org/protobuf v1.27.1
 )
