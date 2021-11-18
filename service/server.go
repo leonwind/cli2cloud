@@ -4,9 +4,11 @@ import (
 	"crypto/md5"
 	"fmt"
 	"github.com/leonwind/cli2cloud/server/serverpb"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"math/big"
+	"net"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -15,8 +17,7 @@ import (
 
 type Server struct {
 	serverpb.UnimplementedCli2CloudServer
-	mu sync.RWMutex
-
+	mu          sync.RWMutex
 	subServices map[string]*subService
 }
 
@@ -24,6 +25,19 @@ func NewServer() *Server {
 	s := new(Server)
 	s.subServices = make(map[string]*subService)
 	return s
+}
+
+func (s *Server) Start(ip string) error {
+	lis, err := net.Listen("tcp", ip)
+	if err != nil {
+		return err
+	}
+	server := grpc.NewServer()
+	serverpb.RegisterCli2CloudServer(server, s)
+	if err := server.Serve(lis); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *Server) Publish(stream serverpb.Cli2Cloud_PublishServer) error {
