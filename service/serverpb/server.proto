@@ -4,18 +4,13 @@ package recshardpb;
 option go_package = "github.com/leonwind/cli2cloud/server/serverpb";
 
 service Cli2Cloud {
-  rpc Register(Empty) returns (RegisterMessage);
-  rpc Publish(stream OutputLine) returns (Empty);
-  rpc Subscribe(RegisterMessage) returns (stream OutputLine);
+  rpc Publish(stream Output) returns (Empty);
+  rpc Subscribe(Empty) returns (stream Output);
 }
 
-message OutputLine {
-  uint32 ClientID = 1;
-  string Line = 2;
-}
-
-message RegisterMessage {
-  uint32 ClientID = 1;
+message Output {
+  string Content = 1;
+  uint32 Num = 2;
 }
 
 message Empty{}

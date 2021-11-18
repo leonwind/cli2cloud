@@ -18,9 +18,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type Cli2CloudClient interface {
-	Register(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RegisterMessage, error)
 	Publish(ctx context.Context, opts ...grpc.CallOption) (Cli2Cloud_PublishClient, error)
-	Subscribe(ctx context.Context, in *RegisterMessage, opts ...grpc.CallOption) (Cli2Cloud_SubscribeClient, error)
+	Subscribe(ctx context.Context, in *Empty, opts ...grpc.CallOption) (Cli2Cloud_SubscribeClient, error)
 }
 
 type cli2CloudClient struct {
@@ -29,15 +28,6 @@ type cli2CloudClient struct {
 
 func NewCli2CloudClient(cc grpc.ClientConnInterface) Cli2CloudClient {
 	return &cli2CloudClient{cc}
-}
-
-func (c *cli2CloudClient) Register(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RegisterMessage, error) {
-	out := new(RegisterMessage)
-	err := c.cc.Invoke(ctx, "/recshardpb.Cli2Cloud/Register", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *cli2CloudClient) Publish(ctx context.Context, opts ...grpc.CallOption) (Cli2Cloud_PublishClient, error) {
@@ -50,7 +40,7 @@ func (c *cli2CloudClient) Publish(ctx context.Context, opts ...grpc.CallOption) 
 }
 
 type Cli2Cloud_PublishClient interface {
-	Send(*OutputLine) error
+	Send(*Output) error
 	CloseAndRecv() (*Empty, error)
 	grpc.ClientStream
 }
@@ -59,7 +49,7 @@ type cli2CloudPublishClient struct {
 	grpc.ClientStream
 }
 
-func (x *cli2CloudPublishClient) Send(m *OutputLine) error {
+func (x *cli2CloudPublishClient) Send(m *Output) error {
 	return x.ClientStream.SendMsg(m)
 }
 
@@ -74,7 +64,7 @@ func (x *cli2CloudPublishClient) CloseAndRecv() (*Empty, error) {
 	return m, nil
 }
 
-func (c *cli2CloudClient) Subscribe(ctx context.Context, in *RegisterMessage, opts ...grpc.CallOption) (Cli2Cloud_SubscribeClient, error) {
+func (c *cli2CloudClient) Subscribe(ctx context.Context, in *Empty, opts ...grpc.CallOption) (Cli2Cloud_SubscribeClient, error) {
 	stream, err := c.cc.NewStream(ctx, &Cli2Cloud_ServiceDesc.Streams[1], "/recshardpb.Cli2Cloud/Subscribe", opts...)
 	if err != nil {
 		return nil, err
@@ -90,7 +80,7 @@ func (c *cli2CloudClient) Subscribe(ctx context.Context, in *RegisterMessage, op
 }
 
 type Cli2Cloud_SubscribeClient interface {
-	Recv() (*OutputLine, error)
+	Recv() (*Output, error)
 	grpc.ClientStream
 }
 
@@ -98,8 +88,8 @@ type cli2CloudSubscribeClient struct {
 	grpc.ClientStream
 }
 
-func (x *cli2CloudSubscribeClient) Recv() (*OutputLine, error) {
-	m := new(OutputLine)
+func (x *cli2CloudSubscribeClient) Recv() (*Output, error) {
+	m := new(Output)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -110,9 +100,8 @@ func (x *cli2CloudSubscribeClient) Recv() (*OutputLine, error) {
 // All implementations must embed UnimplementedCli2CloudServer
 // for forward compatibility
 type Cli2CloudServer interface {
-	Register(context.Context, *Empty) (*RegisterMessage, error)
 	Publish(Cli2Cloud_PublishServer) error
-	Subscribe(*RegisterMessage, Cli2Cloud_SubscribeServer) error
+	Subscribe(*Empty, Cli2Cloud_SubscribeServer) error
 	mustEmbedUnimplementedCli2CloudServer()
 }
 
@@ -120,13 +109,10 @@ type Cli2CloudServer interface {
 type UnimplementedCli2CloudServer struct {
 }
 
-func (UnimplementedCli2CloudServer) Register(context.Context, *Empty) (*RegisterMessage, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
-}
 func (UnimplementedCli2CloudServer) Publish(Cli2Cloud_PublishServer) error {
 	return status.Errorf(codes.Unimplemented, "method Publish not implemented")
 }
-func (UnimplementedCli2CloudServer) Subscribe(*RegisterMessage, Cli2Cloud_SubscribeServer) error {
+func (UnimplementedCli2CloudServer) Subscribe(*Empty, Cli2Cloud_SubscribeServer) error {
 	return status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
 func (UnimplementedCli2CloudServer) mustEmbedUnimplementedCli2CloudServer() {}
@@ -142,31 +128,13 @@ func RegisterCli2CloudServer(s grpc.ServiceRegistrar, srv Cli2CloudServer) {
 	s.RegisterService(&Cli2Cloud_ServiceDesc, srv)
 }
 
-func _Cli2Cloud_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(Cli2CloudServer).Register(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/recshardpb.Cli2Cloud/Register",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(Cli2CloudServer).Register(ctx, req.(*Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Cli2Cloud_Publish_Handler(srv interface{}, stream grpc.ServerStream) error {
 	return srv.(Cli2CloudServer).Publish(&cli2CloudPublishServer{stream})
 }
 
 type Cli2Cloud_PublishServer interface {
 	SendAndClose(*Empty) error
-	Recv() (*OutputLine, error)
+	Recv() (*Output, error)
 	grpc.ServerStream
 }
 
@@ -178,8 +146,8 @@ func (x *cli2CloudPublishServer) SendAndClose(m *Empty) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *cli2CloudPublishServer) Recv() (*OutputLine, error) {
-	m := new(OutputLine)
+func (x *cli2CloudPublishServer) Recv() (*Output, error) {
+	m := new(Output)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -187,7 +155,7 @@ func (x *cli2CloudPublishServer) Recv() (*OutputLine, error) {
 }
 
 func _Cli2Cloud_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(RegisterMessage)
+	m := new(Empty)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -195,7 +163,7 @@ func _Cli2Cloud_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) err
 }
 
 type Cli2Cloud_SubscribeServer interface {
-	Send(*OutputLine) error
+	Send(*Output) error
 	grpc.ServerStream
 }
 
@@ -203,7 +171,7 @@ type cli2CloudSubscribeServer struct {
 	grpc.ServerStream
 }
 
-func (x *cli2CloudSubscribeServer) Send(m *OutputLine) error {
+func (x *cli2CloudSubscribeServer) Send(m *Output) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -213,12 +181,7 @@ func (x *cli2CloudSubscribeServer) Send(m *OutputLine) error {
 var Cli2Cloud_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "recshardpb.Cli2Cloud",
 	HandlerType: (*Cli2CloudServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Register",
-			Handler:    _Cli2Cloud_Register_Handler,
-		},
-	},
+	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "Publish",
