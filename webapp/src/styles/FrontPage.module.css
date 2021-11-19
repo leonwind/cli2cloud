@@ -1,26 +1,30 @@
-html, .body {
+.body {
     height: 100%;
-    background-color: #121212;
+    min-height: 100vh;
+    background-color: #1c1c1c;
 }
 
 .headline {
+    padding-top: 5%;
     text-align: center;
-    color: white;
+    color: #e7e7e7;
     opacity: 0.87;
 }
 
 .mediumText {
     text-align: center;
-    color: white;
+    color: #e7e7e7;
     opacity: 0.6;
 }
 
 .searchForm {
-    text-align: center;
-    width: 50%;
+    width: 50%; 
     margin: auto;
+    color: #ffffff !important;
+    background-color: #333333 !important;
+    border: 0px !important;
 }
 
-.searchIcon {
-    position: absolute;
+.searchForm:focus {
+    box-shadow: none !important;
 }
