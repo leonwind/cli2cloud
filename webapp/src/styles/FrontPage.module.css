@@ -1,0 +1,26 @@
+html, .body {
+    height: 100%;
+    background-color: #121212;
+}
+
+.headline {
+    text-align: center;
+    color: white;
+    opacity: 0.87;
+}
+
+.mediumText {
+    text-align: center;
+    color: white;
+    opacity: 0.6;
+}
+
+.searchForm {
+    text-align: center;
+    width: 50%;
+    margin: auto;
+}
+
+.searchIcon {
+    position: absolute;
+}
