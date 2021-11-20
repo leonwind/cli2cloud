@@ -1,4 +1,4 @@
-module github.com/leonwind/cli2cloud/server
+module github.com/leonwind/cli2cloud/service
 
 go 1.16
 

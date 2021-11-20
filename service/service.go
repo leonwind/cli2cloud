@@ -1,9 +1,9 @@
-package service
+package main
 
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/leonwind/cli2cloud/server/serverpb"
+	"github.com/leonwind/cli2cloud/service/serverpb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
@@ -15,19 +15,19 @@ import (
 	"time"
 )
 
-type Server struct {
+type Service struct {
 	serverpb.UnimplementedCli2CloudServer
 	mu          sync.RWMutex
 	subServices map[string]*subService
 }
 
-func NewServer() *Server {
-	s := new(Server)
+func NewServer() *Service {
+	s := new(Service)
 	s.subServices = make(map[string]*subService)
 	return s
 }
 
-func (s *Server) Start(ip string) error {
+func (s *Service) Start(ip string) error {
 	lis, err := net.Listen("tcp", ip)
 	if err != nil {
 		return err
@@ -40,20 +40,20 @@ func (s *Server) Start(ip string) error {
 	return nil
 }
 
-func (s *Server) Publish(stream serverpb.Cli2Cloud_PublishServer) error {
+func (s *Service) Publish(stream serverpb.Cli2Cloud_PublishServer) error {
 	p, ok := peer.FromContext(stream.Context())
 	if !ok {
 		return fmt.Errorf("failed to extract peer-info")
 	}
-	clientID := createUniqueID(p.Addr.String())
-	md := metadata.New(map[string]string{"clientid": clientID})
+	sessionID := createUniqueID(p.Addr.String())
+	md := metadata.New(map[string]string{"sessionid": sessionID})
 	if err := stream.SendHeader(md); err != nil {
 		return err
 	}
 
 	subSrv := newSubService()
 	s.mu.Lock()
-	s.subServices[clientID] = subSrv
+	s.subServices[sessionID] = subSrv
 	s.mu.Unlock()
 
 	for {
@@ -66,22 +66,22 @@ func (s *Server) Publish(stream serverpb.Cli2Cloud_PublishServer) error {
 	}
 }
 
-func (s *Server) Subscribe(_ *serverpb.Empty, stream serverpb.Cli2Cloud_SubscribeServer) error {
+func (s *Service) Subscribe(_ *serverpb.Empty, stream serverpb.Cli2Cloud_SubscribeServer) error {
 	md, ok := metadata.FromIncomingContext(stream.Context())
 	if !ok {
 		return fmt.Errorf("failed to get metadata")
 	}
-	if len(md.Get("clientid")) <= 0 {
-		return fmt.Errorf("failed to get clientID from metadata")
+	if len(md.Get("sessionid")) <= 0 {
+		return fmt.Errorf("failed to get sessionID from metadata")
 	}
 
-	clientID := md.Get("clientid")[0]
+	sessionID := md.Get("sessionid")[0]
 	// TODO also lookup psql
 	s.mu.RLock()
-	subSrv, ok := s.subServices[clientID]
+	subSrv, ok := s.subServices[sessionID]
 	s.mu.RUnlock()
 	if !ok {
-		return fmt.Errorf("nothing published for this client")
+		return fmt.Errorf("nothing published for this session")
 	}
 
 	ch, id := subSrv.newSubscription()

@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	service "github.com/leonwind/cli2cloud/server"
 	"log"
 )
 
@@ -12,8 +11,9 @@ var (
 
 func main() {
 	flag.Parse()
-	s := service.NewServer()
+	s := NewServer()
 	if err := s.Start(*ip); err != nil {
 		log.Fatalln(err)
 	}
 }
+
