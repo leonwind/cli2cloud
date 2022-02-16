@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+const (
+	idLength = 6
+)
+
 func (s *Service) Publish(stream servicepb.Cli2Cloud_PublishServer) error {
 	p, ok := peer.FromContext(stream.Context())
 	if !ok {
@@ -20,17 +24,17 @@ func (s *Service) Publish(stream servicepb.Cli2Cloud_PublishServer) error {
 	return nil
 }
 
-// Create valid and unique id for a client
+// Create valid and unique ID for a client based on ones ip address and the current timestamp.
 func createNewID(ipAddr string) string {
-	// Create unique id for the client by hashing the ip address and the current
-	// timestamp and encoding the hash using base62 ([0-9][A-Z][a-z])
-	// Use MD5 since since it is significantly faster than SHA2 and not security relevant
+	// Create a unique ID for the client by hashing the ip address and the current
+	// timestamp and encode the hash using base62 ([0-9][A-Z][a-z]).
+	// Use MD5 since since it is significantly faster than SHA2 and not security relevant.
 	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	hash := md5.Sum([]byte(ipAddr + timestamp))
 
-	// encode hash into base62 and use the first 5 characters as the unique id
-	// 62^5 = 916132832 different unique ids
-	uniqueID := encodeBase62(hash)[:5]
+	// Encode hash into base62 and use the first 6 characters as the ID:
+	// 62^6 ~ 56E9 different unique IDs
+	uniqueID := encodeBase62(hash)[:idLength]
 	return uniqueID
 }
 
