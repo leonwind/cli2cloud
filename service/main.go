@@ -6,11 +6,10 @@ import (
 )
 
 const (
-	port = ":8080"
+	port = ":50051"
 )
 
 func main() {
-	//grpcService := NewService()
 	service := api.NewServer()
 
 	if err := service.Start(port); err != nil {

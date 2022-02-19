@@ -10,8 +10,7 @@ service Cli2Cloud {
 }
 
 message Content {
-  string Body = 1;
-  int64  LineNumber = 2;
+  string Payload = 1;
 }
 
 message Empty {}

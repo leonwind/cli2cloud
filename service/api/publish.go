@@ -4,6 +4,8 @@ import (
 	"crypto/md5"
 	"fmt"
 	"google.golang.org/grpc/peer"
+	"io"
+	"log"
 	"math/big"
 	"service/servicepb"
 	"strconv"
@@ -19,9 +21,25 @@ func (s *Service) Publish(stream servicepb.Cli2Cloud_PublishServer) error {
 	if !ok {
 		return fmt.Errorf("failed to extract peer-info")
 	}
-	clientID := createNewID(p.Addr.String())
 
-	return nil
+	clientID := createNewID(p.Addr.String())
+	line := 0
+
+	for {
+		var content *servicepb.Content
+		content, err := stream.Recv()
+
+		if err == io.EOF {
+			return stream.SendAndClose(&servicepb.Empty{})
+		}
+
+		if err != nil {
+			return err
+		}
+
+		message := fmt.Sprintf("Client %s, line %d: %s", clientID, line, content.Payload)
+		log.Println(message)
+	}
 }
 
 // Create valid and unique ID for a client based on ones ip address and the current timestamp.
