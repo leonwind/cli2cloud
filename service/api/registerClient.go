@@ -25,7 +25,7 @@ func (s *Service) RegisterClient(ctx context.Context, _ *pb.Empty) (*pb.Client, 
 		Id: clientID,
 	}
 
-	if err := s.db.CreateUser(client); err != nil {
+	if err := s.db.RegisterClient(client); err != nil {
 		log.Println("Couldn't insert user", err)
 		return nil, err
 	}

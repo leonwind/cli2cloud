@@ -40,7 +40,10 @@ func main() {
 	}
 
 	client := pb.NewCli2CloudClient(conn)
-	if err := sendMessages(client, context.Background()); err != nil {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	if err := sendMessages(client, ctx); err != nil {
 		log.Fatal("Error while sending to server", err)
 	}
 
