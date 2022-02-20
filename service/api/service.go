@@ -2,6 +2,7 @@ package api
 
 import (
 	"google.golang.org/grpc"
+	"log"
 	"net"
 	"service/servicepb"
 )
@@ -19,8 +20,10 @@ func (s *Service) Start(ip string) error {
 	if err != nil {
 		return err
 	}
+
 	server := grpc.NewServer()
 	servicepb.RegisterCli2CloudServer(server, s)
+	log.Println("Registered server...")
 	if err := server.Serve(lis); err != nil {
 		return err
 	}

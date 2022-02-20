@@ -39,6 +39,7 @@ func (s *Service) Publish(stream servicepb.Cli2Cloud_PublishServer) error {
 
 		message := fmt.Sprintf("Client %s, line %d: %s", clientID, line, content.Payload)
 		log.Println(message)
+		line++
 	}
 }
 
