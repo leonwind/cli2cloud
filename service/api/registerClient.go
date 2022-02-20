@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+const idLength = 6
+
 func (s *Service) RegisterClient(ctx context.Context, _ *pb.Empty) (*pb.Client, error) {
 	p, ok := peer.FromContext(ctx)
 	if !ok {
@@ -21,6 +23,7 @@ func (s *Service) RegisterClient(ctx context.Context, _ *pb.Empty) (*pb.Client, 
 	client := pb.Client{
 		Id: clientID,
 	}
+
 	return &client, nil
 }
 

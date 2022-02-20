@@ -24,6 +24,7 @@ func (s *Service) Start(ip string) error {
 	server := grpc.NewServer()
 	pb.RegisterCli2CloudServer(server, s)
 	log.Println("Registered server...")
+
 	if err := server.Serve(lis); err != nil {
 		return err
 	}

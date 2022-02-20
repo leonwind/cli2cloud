@@ -7,10 +7,6 @@ import (
 	"service/api/pb"
 )
 
-const (
-	idLength = 6
-)
-
 func (s *Service) Publish(stream pb.Cli2Cloud_PublishServer) error {
 	line := 0
 
