@@ -8,7 +8,7 @@ import (
 )
 
 func (s *Service) Publish(stream pb.Cli2Cloud_PublishServer) error {
-	var row uint64 = 0
+	var row int64 = 0
 
 	for {
 		var content *pb.Content
