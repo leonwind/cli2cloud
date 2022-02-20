@@ -3,28 +3,30 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/leonwind/cli2cloud/service/servicepb"
+	"github.com/leonwind/cli2cloud/service/api/pb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 )
 
-type Cli2Cloud struct {
-	client servicepb.Cli2CloudClient
-}
-
-func (c *Cli2Cloud) Publish(ctx context.Context) error {
-	stream, err := c.client.Publish(ctx)
+func sendMessages(c pb.Cli2CloudClient, ctx context.Context) error {
+	stream, err := c.Publish(ctx)
 	if err != nil {
 		return err
 	}
 
-	for i := 0; i < 5; i++ {
-		content := servicepb.Content{
+	client, err := c.RegisterClient(ctx, &pb.Empty{})
+	clientID := client.Id
+	fmt.Println(clientID)
+
+	for i := 0; i < 100; i++ {
+		content := pb.Content{
 			Payload: fmt.Sprintf("Hello World nr %d", i),
+			Client:  client,
 		}
 
 		if err := stream.Send(&content); err != nil {
-			return fmt.Errorf("error while sending %w", err)
+			return err
 		}
 	}
 
@@ -33,16 +35,13 @@ func (c *Cli2Cloud) Publish(ctx context.Context) error {
 }
 
 func main() {
-	conn, err := grpc.Dial(":50051", grpc.WithInsecure())
+	conn, err := grpc.Dial(":50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("Unable to connect to grpc", err)
 	}
 
-	cli2Cloud := Cli2Cloud{
-		client: servicepb.NewCli2CloudClient(conn),
-	}
-
-	if err := cli2Cloud.Publish(context.Background()); err != nil {
+	client := pb.NewCli2CloudClient(conn)
+	if err := sendMessages(client, context.Background()); err != nil {
 		log.Fatal("Error while sending to server", err)
 	}
 

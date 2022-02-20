@@ -1,7 +1,7 @@
 package api
 
-import "service/servicepb"
+import "service/api/pb"
 
-func (s *Service) Subscribe(_ *servicepb.Empty, stream servicepb.Cli2Cloud_SubscribeServer) error {
+func (s *Service) Subscribe(client *pb.Client, stream pb.Cli2Cloud_SubscribeServer) error {
 	return nil
 }

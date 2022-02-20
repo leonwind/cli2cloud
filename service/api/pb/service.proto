@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option go_package = "github.com/leonwind/service/api/pb";
+
+package pb;
+
+service Cli2Cloud {
+  rpc Publish(stream Content) returns (Empty);
+  rpc RegisterClient(Empty) returns (Client);
+  rpc Subscribe(Client) returns (stream Content);
+}
+
+message Content {
+  string Payload = 1;
+  Client client = 2;
+}
+
+message Client {
+  string Id = 1;
+}
+
+message Empty {}
