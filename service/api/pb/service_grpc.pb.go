@@ -22,8 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type Cli2CloudClient interface {
-	Publish(ctx context.Context, opts ...grpc.CallOption) (Cli2Cloud_PublishClient, error)
 	RegisterClient(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Client, error)
+	Publish(ctx context.Context, opts ...grpc.CallOption) (Cli2Cloud_PublishClient, error)
 	Subscribe(ctx context.Context, in *Client, opts ...grpc.CallOption) (Cli2Cloud_SubscribeClient, error)
 }
 
@@ -33,6 +33,15 @@ type cli2CloudClient struct {
 
 func NewCli2CloudClient(cc grpc.ClientConnInterface) Cli2CloudClient {
 	return &cli2CloudClient{cc}
+}
+
+func (c *cli2CloudClient) RegisterClient(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Client, error) {
+	out := new(Client)
+	err := c.cc.Invoke(ctx, "/pb.Cli2Cloud/RegisterClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *cli2CloudClient) Publish(ctx context.Context, opts ...grpc.CallOption) (Cli2Cloud_PublishClient, error) {
@@ -67,15 +76,6 @@ func (x *cli2CloudPublishClient) CloseAndRecv() (*Empty, error) {
 		return nil, err
 	}
 	return m, nil
-}
-
-func (c *cli2CloudClient) RegisterClient(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Client, error) {
-	out := new(Client)
-	err := c.cc.Invoke(ctx, "/pb.Cli2Cloud/RegisterClient", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *cli2CloudClient) Subscribe(ctx context.Context, in *Client, opts ...grpc.CallOption) (Cli2Cloud_SubscribeClient, error) {
@@ -114,8 +114,8 @@ func (x *cli2CloudSubscribeClient) Recv() (*Content, error) {
 // All implementations must embed UnimplementedCli2CloudServer
 // for forward compatibility
 type Cli2CloudServer interface {
-	Publish(Cli2Cloud_PublishServer) error
 	RegisterClient(context.Context, *Empty) (*Client, error)
+	Publish(Cli2Cloud_PublishServer) error
 	Subscribe(*Client, Cli2Cloud_SubscribeServer) error
 	mustEmbedUnimplementedCli2CloudServer()
 }
@@ -124,11 +124,11 @@ type Cli2CloudServer interface {
 type UnimplementedCli2CloudServer struct {
 }
 
-func (UnimplementedCli2CloudServer) Publish(Cli2Cloud_PublishServer) error {
-	return status.Errorf(codes.Unimplemented, "method Publish not implemented")
-}
 func (UnimplementedCli2CloudServer) RegisterClient(context.Context, *Empty) (*Client, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterClient not implemented")
+}
+func (UnimplementedCli2CloudServer) Publish(Cli2Cloud_PublishServer) error {
+	return status.Errorf(codes.Unimplemented, "method Publish not implemented")
 }
 func (UnimplementedCli2CloudServer) Subscribe(*Client, Cli2Cloud_SubscribeServer) error {
 	return status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
@@ -144,6 +144,24 @@ type UnsafeCli2CloudServer interface {
 
 func RegisterCli2CloudServer(s grpc.ServiceRegistrar, srv Cli2CloudServer) {
 	s.RegisterService(&Cli2Cloud_ServiceDesc, srv)
+}
+
+func _Cli2Cloud_RegisterClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Cli2CloudServer).RegisterClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.Cli2Cloud/RegisterClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Cli2CloudServer).RegisterClient(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Cli2Cloud_Publish_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -170,24 +188,6 @@ func (x *cli2CloudPublishServer) Recv() (*Content, error) {
 		return nil, err
 	}
 	return m, nil
-}
-
-func _Cli2Cloud_RegisterClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(Cli2CloudServer).RegisterClient(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/pb.Cli2Cloud/RegisterClient",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(Cli2CloudServer).RegisterClient(ctx, req.(*Empty))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Cli2Cloud_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {

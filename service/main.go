@@ -10,7 +10,10 @@ const (
 )
 
 func main() {
-	service := api.NewServer()
+	service, err := api.NewServer()
+	if err != nil {
+		log.Fatal("Cant create server", err)
+	}
 
 	if err := service.Start(port); err != nil {
 		log.Fatal("Can't start server", err)

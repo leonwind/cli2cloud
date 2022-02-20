@@ -16,12 +16,11 @@ func sendMessages(c pb.Cli2CloudClient, ctx context.Context) error {
 	}
 
 	client, err := c.RegisterClient(ctx, &pb.Empty{})
-	clientID := client.Id
-	fmt.Println(clientID)
+	fmt.Println(client.Id)
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 10; i++ {
 		content := pb.Content{
-			Payload: fmt.Sprintf("Hello World nr %d", i),
+			Payload: fmt.Sprintf("Hello World %d", i),
 			Client:  client,
 		}
 

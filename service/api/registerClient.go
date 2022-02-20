@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"google.golang.org/grpc/peer"
+	"log"
 	"math/big"
 	"service/api/pb"
 	"strconv"
@@ -20,11 +21,16 @@ func (s *Service) RegisterClient(ctx context.Context, _ *pb.Empty) (*pb.Client, 
 	}
 
 	clientID := createNewID(p.Addr.String())
-	client := pb.Client{
+	client := &pb.Client{
 		Id: clientID,
 	}
 
-	return &client, nil
+	if err := s.db.CreateUser(client); err != nil {
+		log.Println("Couldn't insert user", err)
+		return nil, err
+	}
+
+	return client, nil
 }
 
 // Create valid and unique ID for a client based on ones ip address and the current timestamp.

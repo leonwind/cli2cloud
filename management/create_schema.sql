@@ -21,26 +21,61 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: core_storage; Type: TABLE; Schema: public; Owner: admin.
+-- Name: cli_output; Type: TABLE; Schema: public; Owner: leon.windheuser
 --
 
-CREATE TABLE public.core_storage (
-    clientid text NOT NULL,
+CREATE TABLE public.cli_output (
+    userid text NOT NULL,
     "row" integer NOT NULL,
-    content text NOT NULL,
+    content text NOT NULL
+);
+
+
+ALTER TABLE public.cli_output OWNER TO "leon.windheuser";
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: leon.windheuser
+--
+
+CREATE TABLE public.users (
+    id text NOT NULL,
     encrypted boolean NOT NULL,
     created timestamp with time zone NOT NULL
 );
 
 
-ALTER TABLE public.core_storage OWNER TO "admin";
+ALTER TABLE public.users OWNER TO "leon.windheuser";
 
 --
--- Data for Name: core_storage; Type: TABLE DATA; Schema: public; Owner: leon.windheuser
+-- Data for Name: cli_output; Type: TABLE DATA; Schema: public; Owner: leon.windheuser
 --
 
-COPY public.core_storage (clientid, "row", content, encrypted, created) FROM stdin;
+COPY public.cli_output (userid, "row", content) FROM stdin;
 \.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: leon.windheuser
+--
+
+COPY public.users (id, encrypted, created) FROM stdin;
+\.
+
+
+--
+-- Name: cli_output cli_output_pkey; Type: CONSTRAINT; Schema: public; Owner: leon.windheuser
+--
+
+ALTER TABLE ONLY public.cli_output
+    ADD CONSTRAINT cli_output_pkey PRIMARY KEY (userid);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: leon.windheuser
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --

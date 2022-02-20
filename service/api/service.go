@@ -5,14 +5,26 @@ import (
 	"log"
 	"net"
 	"service/api/pb"
+	"service/internal/storage"
 )
 
 type Service struct {
 	pb.UnimplementedCli2CloudServer
+	db storage.Database
 }
 
-func NewServer() *Service {
-	return &Service{}
+func NewServer() (*Service, error) {
+	psql, err := storage.InitPostgres()
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Connected to database")
+
+	service := Service{
+		db: psql,
+	}
+
+	return &service, nil
 }
 
 func (s *Service) Start(ip string) error {
@@ -28,5 +40,6 @@ func (s *Service) Start(ip string) error {
 	if err := server.Serve(lis); err != nil {
 		return err
 	}
+
 	return nil
 }

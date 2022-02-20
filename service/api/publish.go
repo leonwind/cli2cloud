@@ -8,7 +8,7 @@ import (
 )
 
 func (s *Service) Publish(stream pb.Cli2Cloud_PublishServer) error {
-	line := 0
+	var row uint64 = 0
 
 	for {
 		var content *pb.Content
@@ -22,8 +22,14 @@ func (s *Service) Publish(stream pb.Cli2Cloud_PublishServer) error {
 			return err
 		}
 
-		message := fmt.Sprintf("Client %s, line %d: %s", content.Client.Id, line, content.Payload)
+		message := fmt.Sprintf("Client %s, line %d: %s", content.Client.Id, row, content.Payload)
 		log.Println(message)
-		line++
+
+		if err := s.db.WriteContent(content, row); err != nil {
+			log.Println("Couldn't write content to psql", err)
+			return err
+		}
+
+		row++
 	}
 }
