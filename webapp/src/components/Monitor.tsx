@@ -48,8 +48,10 @@ export class Monitor extends Component<{}, State> {
     constructor(props: any) {
         super(props);
 
+        const clientID = window.location.pathname.substring(1);
+
         this.state = {
-            clientID: "3Q8N0o",
+            clientID: clientID,
             contents: []
         };
         this.loadContent = this.loadContent.bind(this);

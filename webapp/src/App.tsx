@@ -4,7 +4,7 @@ import {
     Route 
 } from "react-router-dom";
 import {FrontPage} from './components/FrontPage'
-import {Monitor} from './components/OutputMonitor'
+import {Monitor} from './components/Monitor'
 
 export function App (){
     return (
