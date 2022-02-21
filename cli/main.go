@@ -3,24 +3,24 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/leonwind/cli2cloud/service/api/pb"
+	"github.com/leonwind/cli2cloud/service/api/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"time"
 )
 
-func sendMessages(c pb.Cli2CloudClient, ctx context.Context) error {
+func sendMessages(c proto.Cli2CloudClient, ctx context.Context) error {
 	stream, err := c.Publish(ctx)
 	if err != nil {
 		return err
 	}
 
-	client, err := c.RegisterClient(ctx, &pb.Empty{})
+	client, err := c.RegisterClient(ctx, &proto.Empty{})
 	fmt.Println(client.Id)
 
 	for i := 0; i < 1000; i++ {
-		content := pb.Content{
+		content := proto.Content{
 			Payload: fmt.Sprintf("Hello World %d", i),
 			Client:  client,
 		}
@@ -36,8 +36,8 @@ func sendMessages(c pb.Cli2CloudClient, ctx context.Context) error {
 	return err
 }
 
-func receiveMessages(c pb.Cli2CloudClient, ctx context.Context) error {
-	client := &pb.Client{Id: "1WRTFE"}
+func receiveMessages(c proto.Cli2CloudClient, ctx context.Context) error {
+	client := &proto.Client{Id: "1WRTFE"}
 	stream, err := c.Subscribe(ctx, client)
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func main() {
 		log.Fatal("Unable to connect to grpc", err)
 	}
 
-	client := pb.NewCli2CloudClient(conn)
+	client := proto.NewCli2CloudClient(conn)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

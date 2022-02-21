@@ -1,12 +1,14 @@
 package api
 
 import (
-	"service/api/pb"
+	"log"
+	"service/api/proto"
 )
 
-func (s *Service) Subscribe(client *pb.Client, stream pb.Cli2Cloud_SubscribeServer) error {
+func (s *Service) Subscribe(client *proto.Client, stream proto.Cli2Cloud_SubscribeServer) error {
 	ctx := stream.Context()
 	var row int64 = 0
+	log.Printf("Subscribe for client %s\n", client.Id)
 
 	for {
 		select {

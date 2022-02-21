@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"service/api/pb"
+	"service/api/proto"
 )
 
-func (s *Service) Publish(stream pb.Cli2Cloud_PublishServer) error {
+func (s *Service) Publish(stream proto.Cli2Cloud_PublishServer) error {
 	var row int64 = 0
 
 	for {
-		var content *pb.Content
+		var content *proto.Content
 		content, err := stream.Recv()
 
 		if err == io.EOF {
-			return stream.SendAndClose(&pb.Empty{})
+			return stream.SendAndClose(&proto.Empty{})
 		}
 
 		if err != nil {

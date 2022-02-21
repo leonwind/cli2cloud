@@ -51,7 +51,7 @@ export class FrontPage extends Component<{}, State> {
                 <Form onSubmit={this.handleSubmit}>
                 <div className={styles.searchForm}> 
                         <Form.Control className={styles.searchForm} value={this.state.clientID} onChange={this.handleClientIDChange} size="lg" type="text" 
-                            placeholder="Enter your terminal ID..."/>
+                            placeholder="Enter your client ID..."/>
                 </div>
                 </Form>
 

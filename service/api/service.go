@@ -4,12 +4,12 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	"service/api/pb"
+	"service/api/proto"
 	"service/internal/storage"
 )
 
 type Service struct {
-	pb.UnimplementedCli2CloudServer
+	proto.UnimplementedCli2CloudServer
 	db storage.Database
 }
 
@@ -34,7 +34,7 @@ func (s *Service) Start(ip string) error {
 	}
 
 	server := grpc.NewServer()
-	pb.RegisterCli2CloudServer(server, s)
+	proto.RegisterCli2CloudServer(server, s)
 	log.Println("Registered server...")
 
 	if err := server.Serve(lis); err != nil {

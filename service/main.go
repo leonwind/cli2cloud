@@ -5,9 +5,7 @@ import (
 	"service/api"
 )
 
-const (
-	port = ":50051"
-)
+const port = ":50051"
 
 func main() {
 	service, err := api.NewServer()
