@@ -28,6 +28,7 @@ func sendMessages(c pb.Cli2CloudClient, ctx context.Context) error {
 		if err := stream.Send(&content); err != nil {
 			return err
 		}
+
 		time.Sleep(1 * time.Second)
 	}
 
