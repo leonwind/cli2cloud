@@ -23,6 +23,7 @@
     color: #ffffff !important;
     background-color: #333333 !important;
     border: 0px !important;
+    border-radius: 25px !important;
 }
 
 .searchForm:focus {

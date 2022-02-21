@@ -4,33 +4,7 @@ import * as grpcWeb from "grpc-web";
 import {Cli2CloudClient} from "../proto/ServiceServiceClientPb"
 import {Client, Content} from "../proto/service_pb"
 
-
-
 const cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null)
-
-export function OutputMonitor() {
-    let params = useParams();
-    const client = new Client();
-
-    if (params.clientID === undefined) {
-        return <div>Client ID is undefined</div>;
-    }
-
-    client.setId(params.clientID)
-    
-    const stream = cli2CloudService.subscribe(client, {});
-    stream.on("data", function(response: Content) {
-        console.log("Hallo");
-        console.log(response.getPayload(), response.getRow());
-    });
-    stream.on("error", (error: Error): void => {
-        console.error(error);
-    });
-
-    console.log("HERE I AM");
-        
-    return <div>{params.clientID}</div>;
-}
 
 interface Row {
     content: string,
@@ -41,7 +15,6 @@ interface State {
     clientID: string,
     contents: Row[],
 }
-
 
 export class Monitor extends Component<{}, State> {
 
@@ -69,7 +42,6 @@ export class Monitor extends Component<{}, State> {
         const stream = cli2CloudService.subscribe(client, {});
 
         stream.on("data", (response: Content) => {
-            //console.log(response.getPayload(), response.getRow());
             this.addNewContent(response);
         });
 
@@ -84,19 +56,21 @@ export class Monitor extends Component<{}, State> {
             content: new_row.getPayload(), 
             line: new_row.getRow()
         });
+
         this.setState({contents: new_content});
     } 
 
     render() {
+        if (this.state.contents.length === 0) {
+            return <div>No output for client ID "{this.state.clientID}".</div>;
+        }
+
         const allRows: JSX.Element[] = this.state.contents.map((row: Row) => 
             <div>Row {row.line}, content: {row.content}</div>
         );
-        console.log(this.state.contents.length);
-                
+
         return (
-            <div> 
-                {allRows}
-            </div>
+            <div>{allRows}</div>
         );
     }
 }
