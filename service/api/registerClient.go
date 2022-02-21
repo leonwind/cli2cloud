@@ -7,21 +7,21 @@ import (
 	"google.golang.org/grpc/peer"
 	"log"
 	"math/big"
-	"service/api/pb"
+	"service/api/proto"
 	"strconv"
 	"time"
 )
 
 const idLength = 6
 
-func (s *Service) RegisterClient(ctx context.Context, _ *pb.Empty) (*pb.Client, error) {
+func (s *Service) RegisterClient(ctx context.Context, _ *proto.Empty) (*proto.Client, error) {
 	p, ok := peer.FromContext(ctx)
 	if !ok {
 		return nil, fmt.Errorf("failed to extract peer-info")
 	}
 
 	clientID := createNewID(p.Addr.String())
-	client := &pb.Client{
+	client := &proto.Client{
 		Id: clientID,
 	}
 

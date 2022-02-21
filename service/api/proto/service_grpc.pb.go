@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.19.4
-// source: api/pb/service.proto
+// source: api/proto/service.proto
 
-package pb
+package proto
 
 import (
 	context "context"
@@ -37,7 +37,7 @@ func NewCli2CloudClient(cc grpc.ClientConnInterface) Cli2CloudClient {
 
 func (c *cli2CloudClient) RegisterClient(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Client, error) {
 	out := new(Client)
-	err := c.cc.Invoke(ctx, "/pb.Cli2Cloud/RegisterClient", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.Cli2Cloud/RegisterClient", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (c *cli2CloudClient) RegisterClient(ctx context.Context, in *Empty, opts ..
 }
 
 func (c *cli2CloudClient) Publish(ctx context.Context, opts ...grpc.CallOption) (Cli2Cloud_PublishClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Cli2Cloud_ServiceDesc.Streams[0], "/pb.Cli2Cloud/Publish", opts...)
+	stream, err := c.cc.NewStream(ctx, &Cli2Cloud_ServiceDesc.Streams[0], "/proto.Cli2Cloud/Publish", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (x *cli2CloudPublishClient) CloseAndRecv() (*Empty, error) {
 }
 
 func (c *cli2CloudClient) Subscribe(ctx context.Context, in *Client, opts ...grpc.CallOption) (Cli2Cloud_SubscribeClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Cli2Cloud_ServiceDesc.Streams[1], "/pb.Cli2Cloud/Subscribe", opts...)
+	stream, err := c.cc.NewStream(ctx, &Cli2Cloud_ServiceDesc.Streams[1], "/proto.Cli2Cloud/Subscribe", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +156,7 @@ func _Cli2Cloud_RegisterClient_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.Cli2Cloud/RegisterClient",
+		FullMethod: "/proto.Cli2Cloud/RegisterClient",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(Cli2CloudServer).RegisterClient(ctx, req.(*Empty))
@@ -215,7 +215,7 @@ func (x *cli2CloudSubscribeServer) Send(m *Content) error {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Cli2Cloud_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.Cli2Cloud",
+	ServiceName: "proto.Cli2Cloud",
 	HandlerType: (*Cli2CloudServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -235,5 +235,5 @@ var Cli2Cloud_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "api/pb/service.proto",
+	Metadata: "api/proto/service.proto",
 }

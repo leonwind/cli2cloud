@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.27.1
 // 	protoc        v3.19.4
-// source: api/pb/service.proto
+// source: api/proto/service.proto
 
-package pb
+package proto
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -209,18 +209,18 @@ func file_api_pb_service_proto_rawDescGZIP() []byte {
 
 var file_api_pb_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_api_pb_service_proto_goTypes = []interface{}{
-	(*Content)(nil), // 0: pb.Content
-	(*Client)(nil),  // 1: pb.Client
-	(*Empty)(nil),   // 2: pb.Empty
+	(*Content)(nil), // 0: proto.Content
+	(*Client)(nil),  // 1: proto.Client
+	(*Empty)(nil),   // 2: proto.Empty
 }
 var file_api_pb_service_proto_depIdxs = []int32{
-	1, // 0: pb.Content.client:type_name -> pb.Client
-	2, // 1: pb.Cli2Cloud.RegisterClient:input_type -> pb.Empty
-	0, // 2: pb.Cli2Cloud.Publish:input_type -> pb.Content
-	1, // 3: pb.Cli2Cloud.Subscribe:input_type -> pb.Client
-	1, // 4: pb.Cli2Cloud.RegisterClient:output_type -> pb.Client
-	2, // 5: pb.Cli2Cloud.Publish:output_type -> pb.Empty
-	0, // 6: pb.Cli2Cloud.Subscribe:output_type -> pb.Content
+	1, // 0: proto.Content.client:type_name -> proto.Client
+	2, // 1: proto.Cli2Cloud.RegisterClient:input_type -> proto.Empty
+	0, // 2: proto.Cli2Cloud.Publish:input_type -> proto.Content
+	1, // 3: proto.Cli2Cloud.Subscribe:input_type -> proto.Client
+	1, // 4: proto.Cli2Cloud.RegisterClient:output_type -> proto.Client
+	2, // 5: proto.Cli2Cloud.Publish:output_type -> proto.Empty
+	0, // 6: proto.Cli2Cloud.Subscribe:output_type -> proto.Content
 	4, // [4:7] is the sub-list for method output_type
 	1, // [1:4] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
