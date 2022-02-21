@@ -64,13 +64,15 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	//if err := sendMessages(client, ctx); err != nil {
-	//log.Fatal("Error while sending to server", err)
-	//}
-
-	if err := receiveMessages(client, ctx); err != nil {
-		log.Fatal("Error while receiving from server", err)
+	if err := sendMessages(client, ctx); err != nil {
+		log.Fatal("Error while sending to server", err)
 	}
+
+	/*
+		if err := receiveMessages(client, ctx); err != nil {
+			log.Fatal("Error while receiving from server", err)
+		}
+	*/
 
 	err = conn.Close()
 	if err != nil {
