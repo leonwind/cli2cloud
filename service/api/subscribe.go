@@ -1,10 +1,12 @@
 package api
 
-import "service/api/pb"
+import (
+	"service/api/pb"
+)
 
 func (s *Service) Subscribe(client *pb.Client, stream pb.Cli2Cloud_SubscribeServer) error {
-	var row int64 = 0
 	ctx := stream.Context()
+	var row int64 = 0
 
 	for {
 		select {
