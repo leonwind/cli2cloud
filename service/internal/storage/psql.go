@@ -66,7 +66,8 @@ func (psql *Psql) WriteContent(content *proto.Content, row int64) error {
 // ReadContent Return all rows of the client which are newer (greater) than the given row.
 func (psql *Psql) ReadContent(client *proto.Client, row int64) ([]*proto.Content, error) {
 	queryString := fmt.Sprintf("SELECT content, row FROM cli_storage "+
-		"WHERE userid = '%s' AND row >= %d;", client.Id, row)
+		"WHERE userid = '%s' AND row >= %d"+
+		"ORDER BY row;", client.Id, row)
 
 	rows, err := psql.conn.Query(context.Background(), queryString)
 	if err != nil {
