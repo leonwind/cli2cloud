@@ -1,0 +1,27 @@
+.body {
+    height: 100%;
+    min-height: 100vh;
+    background-color: #1c1c1c;
+}
+
+.outputArea {
+    font-family: monospace;
+    color: #e7e7e7;
+}
+
+.row:hover {
+    background-color: yellow;
+    opacity: 0.75;
+    color: #000000
+}
+
+.line {
+    float: left;
+    opacity: 0.6;
+    padding-left: 2%;
+}
+
+.content {
+    padding-left: 2%;
+    opacity: 0.87;
+}

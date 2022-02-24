@@ -1,36 +1,8 @@
 import {Component} from "react";
-import { useParams } from "react-router-dom";
-import * as grpcWeb from "grpc-web";
+import styles from "../styles/Monitor.module.css";
 import {Cli2CloudClient} from "../proto/ServiceServiceClientPb"
 import {Client, Content} from "../proto/service_pb"
 
-
-
-const cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null)
-
-export function OutputMonitor() {
-    let params = useParams();
-    const client = new Client();
-
-    if (params.clientID === undefined) {
-        return <div>Client ID is undefined</div>;
-    }
-
-    client.setId(params.clientID)
-    
-    const stream = cli2CloudService.subscribe(client, {});
-    stream.on("data", function(response: Content) {
-        console.log("Hallo");
-        console.log(response.getPayload(), response.getRow());
-    });
-    stream.on("error", (error: Error): void => {
-        console.error(error);
-    });
-
-    console.log("HERE I AM");
-        
-    return <div>{params.clientID}</div>;
-}
 
 interface Row {
     content: string,
@@ -38,24 +10,26 @@ interface Row {
 }
 
 interface State {
-    clientID: string,
     contents: Row[],
 }
 
-
 export class Monitor extends Component<{}, State> {
+    private cli2CloudService: Cli2CloudClient;
+    private clientID: string;
 
     constructor(props: any) {
         super(props);
 
-        const clientID = window.location.pathname.substring(1);
-
         this.state = {
-            clientID: clientID,
             contents: []
         };
+
+        this.clientID = window.location.pathname.substring(1);
+        this.cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null)
+
         this.loadContent = this.loadContent.bind(this);
-        this.addNewContent = this.addNewContent.bind(this);        
+        this.addNewContent = this.addNewContent.bind(this);
+        this.createDivsForAllRows = this.createDivsForAllRows.bind(this);
     }
 
     componentDidMount() {
@@ -64,12 +38,11 @@ export class Monitor extends Component<{}, State> {
 
     private loadContent() {
         const client = new Client();
-        client.setId(this.state.clientID)
+        client.setId(this.clientID)
 
-        const stream = cli2CloudService.subscribe(client, {});
+        const stream = this.cli2CloudService.subscribe(client, {});
 
         stream.on("data", (response: Content) => {
-            //console.log(response.getPayload(), response.getRow());
             this.addNewContent(response);
         });
 
@@ -84,18 +57,33 @@ export class Monitor extends Component<{}, State> {
             content: new_row.getPayload(), 
             line: new_row.getRow()
         });
+
         this.setState({contents: new_content});
     } 
 
-    render() {
-        const allRows: JSX.Element[] = this.state.contents.map((row: Row) => 
-            <div>Row {row.line}, content: {row.content}</div>
+    private createDivsForAllRows(): JSX.Element[] {
+        return this.state.contents.map((row: Row) => 
+            <div className={styles.row}>
+                <span className={styles.line}>{row.line}</span>
+                <span className={styles.content}>{row.content}</span>
+            </div>
         );
-        console.log(this.state.contents.length);
-                
+    }
+
+    render() {
+        let allRows: JSX.Element[];
+
+        if (this.state.contents.length === 0) {
+            allRows = [<div>No output for client ID "{this.clientID}".</div>];
+        } else {
+            allRows = this.createDivsForAllRows();
+        }
+
         return (
-            <div> 
-                {allRows}
+            <div className={styles.body}>
+                <div className={styles.outputArea}>
+                    {allRows}
+                </div>
             </div>
         );
     }

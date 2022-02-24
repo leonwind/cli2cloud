@@ -50,7 +50,8 @@ export class FrontPage extends Component<{}, State> {
 
                 <Form onSubmit={this.handleSubmit}>
                 <div className={styles.searchForm}> 
-                        <Form.Control className={styles.searchForm} value={this.state.clientID} onChange={this.handleClientIDChange} size="lg" type="text" 
+                        <Form.Control className={styles.searchForm} value={this.state.clientID} 
+                            onChange={this.handleClientIDChange} size="lg" type="text" 
                             placeholder="Enter your client ID..."/>
                 </div>
                 </Form>
@@ -59,7 +60,7 @@ export class FrontPage extends Component<{}, State> {
                 <br/>
 
                 <h6 className={styles.mediumText}>
-                    Monitor and Share Your Yerminal Output with Everyone from Everywhere in Realtime.
+                    Monitor and Share Your Terminal Output with Everyone from Everywhere in Realtime.
                 </h6>
             </div>
         )

@@ -22,7 +22,7 @@ func (s *Service) Publish(stream proto.Cli2Cloud_PublishServer) error {
 			return err
 		}
 
-		message := fmt.Sprintf("Client %s, line %d: %s", content.Client.Id, row, content.Payload)
+		message := fmt.Sprintf("Received from client %s, line %d: %s", content.Client.Id, row, content.Payload)
 		log.Println(message)
 
 		if err := s.db.WriteContent(content, row); err != nil {
