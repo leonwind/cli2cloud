@@ -21,24 +21,26 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context) error {
 
 	client, err := c.RegisterClient(ctx, &proto.Empty{})
 	fmt.Printf("Your client ID: %s\n", client.Id)
-	fmt.Printf("Share it at cli2cloud.com/%s\n\n\n", client.Id)
+	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n\n", client.Id)
 	// Wait 3 seconds for user to copy the client ID
 	time.Sleep(3 * time.Second)
 
 	// TODO: Scan Stderr as well
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
+		row := scanner.Text()
+
+		// Print original input to client as well
+		fmt.Println(row)
+
 		content := proto.Content{
-			Payload: fmt.Sprintf(scanner.Text()),
+			Payload: fmt.Sprintf(row),
 			Client:  client,
 		}
 
 		if err := stream.Send(&content); err != nil {
 			return err
 		}
-
-		// Print original input to client as well
-		fmt.Println(scanner.Text())
 	}
 
 	_, err = stream.CloseAndRecv()
