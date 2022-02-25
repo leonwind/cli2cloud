@@ -30,6 +30,7 @@ export class Monitor extends Component<{}, State> {
         this.loadContent = this.loadContent.bind(this);
         this.addNewContent = this.addNewContent.bind(this);
         this.createDivsForAllRows = this.createDivsForAllRows.bind(this);
+        this.highlightRow = this.highlightRow.bind(this);
     }
 
     componentDidMount() {
@@ -61,10 +62,14 @@ export class Monitor extends Component<{}, State> {
         this.setState({contents: new_content});
     } 
 
+    private highlightRow(line: number) {
+        window.location.hash = line.toString();
+    }
+
     private createDivsForAllRows(): JSX.Element[] {
         return this.state.contents.map((row: Row) => 
-            <div className={styles.row}>
-                <span className={styles.line}>{row.line}</span>
+            <div className={styles.row} id={row.line.toString()} key={row.line}>
+                <span className={styles.line} onClick={() => this.highlightRow(row.line)}>{row.line}</span>
                 <span className={styles.content}>{row.content}</span>
             </div>
         );

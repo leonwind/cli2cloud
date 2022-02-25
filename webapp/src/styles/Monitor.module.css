@@ -9,19 +9,34 @@
     color: #e7e7e7;
 }
 
+.row {
+    display: flex;
+    clear: both;
+}
+
 .row:hover {
+    opacity: 0.8;
+    color: yellow;
+}
+
+.row:target {
     background-color: yellow;
-    opacity: 0.75;
+    opacity: 0.8;
     color: #000000
 }
 
 .line {
+    min-width: 5%;
     float: left;
+    text-align: right;
     opacity: 0.6;
-    padding-left: 2%;
+    cursor: pointer;
+    /* Make line numbers non-copyable */
+    user-select: none;
 }
 
 .content {
-    padding-left: 2%;
+    padding-left: 3%;
+    text-align: left;
     opacity: 0.87;
 }

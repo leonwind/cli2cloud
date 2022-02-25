@@ -67,7 +67,8 @@ func (psql *Psql) WriteContent(content *proto.Content, row int64) error {
 func (psql *Psql) ReadContent(client *proto.Client, row int64) ([]*proto.Content, error) {
 	queryString := fmt.Sprintf("SELECT content, row FROM cli_storage "+
 		"WHERE userid = '%s' AND row >= %d "+
-		"ORDER BY row;", client.Id, row)
+		"ORDER BY row "+
+		"LIMIT 100;", client.Id, row)
 
 	rows, err := psql.conn.Query(context.Background(), queryString)
 	if err != nil {
