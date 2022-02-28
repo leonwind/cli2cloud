@@ -3,7 +3,13 @@ package main
 import (
 	"bufio"
 	"context"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"crypto/sha256"
+	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"time"
@@ -13,10 +19,29 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context) error {
+func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *string) error {
 	stream, err := c.Publish(ctx)
 	if err != nil {
 		return err
+	}
+
+	var block cipher.Block
+	if password != nil {
+		keyphrase := sha256.Sum256([]byte(*password))
+		block, err = aes.NewCipher(keyphrase[:])
+		if err != nil {
+			log.Fatal("Couldn't create a cipher. ", err)
+		}
+
+		gcm, err := cipher.NewGCM(block)
+		if err != nil {
+			log.Fatal("Couldn't init new GCM. ", err)
+		}
+
+		nonce := make([]byte, gcm.NonceSize())
+		if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+			fmt.Println("Couldn't populate nounce. ", err)
+		}
 	}
 
 	client, err := c.RegisterClient(ctx, &proto.Empty{})
@@ -33,8 +58,14 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context) error {
 		// Print original input to client as well
 		fmt.Println(row)
 
+		if block != nil {
+			var encrypted []byte
+			block.Encrypt(encrypted, []byte(row))
+			row = string(encrypted)
+		}
+
 		content := proto.Content{
-			Payload: fmt.Sprintf(row),
+			Payload: row,
 			Client:  client,
 		}
 
@@ -48,6 +79,9 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context) error {
 }
 
 func main() {
+	keyphrase := flag.String("encrypt", "", "Keyphrase to encrypt your data with.")
+	flag.Parse()
+
 	conn, err := grpc.Dial(":50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("Unable to connect to grpc", err)
@@ -57,7 +91,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if err := sendPipedMessages(client, ctx); err != nil {
+	if err := sendPipedMessages(client, ctx, keyphrase); err != nil {
 		log.Fatal("Error while sending to server", err)
 	}
 
