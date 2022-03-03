@@ -1,3 +1,6 @@
+// Encrypt the data stream using the AES256-CTR Mode.
+// Mostly following the Blend's crypto library: https://github.com/blend/go-sdk/blob/master/crypto/stream.go
+
 package main
 
 import (
@@ -22,15 +25,14 @@ type StreamEncrypter struct {
 
 const (
 	numPBKDF2Iterations = 1024
-	keyLength           = 32 // bytes
-	saltLength          = 32 // bytes
+	keyLength           = 32 // bytes = 256 bits
+	saltLength          = 32 // bytes = 256 bits
 )
 
-// kdf derives a new key with a length of 32 bytes based on the user password and on a newly created salt.
+// Kdf derives a new key with a length of 32 bytes based on the user password and on a newly created salt.
 func kdf(password string) ([]byte, []byte, error) {
 	salt := make([]byte, saltLength)
-	_, err := rand.Read(salt)
-	if err != nil {
+	if _, err := rand.Read(salt); err != nil {
 		return nil, nil, err
 	}
 
@@ -74,8 +76,7 @@ func (s *StreamEncrypter) Encrypt(row string) (*string, error) {
 	encrypted := make([]byte, len(plaintext))
 	s.Stream.XORKeyStream(encrypted, plaintext)
 
-	err := writeHash(encrypted, s.Mac)
-	if err != nil {
+	if err := writeHash(encrypted, s.Mac); err != nil {
 		return nil, err
 	}
 
@@ -83,6 +84,7 @@ func (s *StreamEncrypter) Encrypt(row string) (*string, error) {
 	return &hexString, nil
 }
 
+// Append the HMAC to the encrypted message.
 func writeHash(encrypted []byte, mac hash.Hash) error {
 	m, err := mac.Write(encrypted)
 	if err != nil {

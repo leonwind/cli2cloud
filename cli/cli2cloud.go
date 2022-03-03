@@ -44,10 +44,10 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 		if s != nil {
 			encryptedRow, err := s.Encrypt(row)
 			if err != nil {
-				log.Fatal("Can't encrypt the data.", err)
+				log.Println("Can't encrypt the data.", err)
+				return err
 			}
 			row = *encryptedRow
-			fmt.Printf("Encrypted row: %s\n", row)
 		}
 
 		content := proto.Content{
@@ -81,8 +81,7 @@ func main() {
 		log.Fatal("Error while sending to server.", err)
 	}
 
-	err = conn.Close()
-	if err != nil {
+	if err := conn.Close(); err != nil {
 		log.Fatal("Unable to close connection.", err)
 	}
 }

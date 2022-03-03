@@ -19,7 +19,7 @@ type StreamDecrypter struct {
 	Mac    hash.Hash
 }
 
-// kdfWithSalt derives a new key with a length of 32 bytes based on the user password and an existing salt.
+// KdfWithSalt derives a new key with a length of 32 bytes based on the user password and an existing salt.
 func kdfWithSalt(password string, salt []byte) []byte {
 	return pbkdf2.Key([]byte(password), salt, numPBKDF2Iterations, keyLength, sha256.New)
 }
@@ -50,10 +50,13 @@ func (s *StreamDecrypter) Decrypt(row string) (*string, error) {
 		return nil, err
 	}
 
-	err = writeHash(encrypted, s.Mac)
+	if err := writeHash(encrypted, s.Mac); err != nil {
+		return nil, err
+	}
+
 	bytePlaintext := make([]byte, len(encrypted))
 	s.Stream.XORKeyStream(bytePlaintext, encrypted)
-	plaintext := string(bytePlaintext)
 
-	return &plaintext, err
+	plaintext := string(bytePlaintext)
+	return &plaintext, nil
 }
