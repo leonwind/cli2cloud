@@ -3,13 +3,8 @@ package main
 import (
 	"bufio"
 	"context"
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/rand"
-	"crypto/sha256"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"time"
@@ -25,28 +20,17 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 		return err
 	}
 
-	var block cipher.Block
+	var s *StreamEncrypter
 	if password != nil {
-		keyphrase := sha256.Sum256([]byte(*password))
-		block, err = aes.NewCipher(keyphrase[:])
+		s, err = NewStreamEncrypter(*password)
 		if err != nil {
-			log.Fatal("Couldn't create a cipher. ", err)
-		}
-
-		gcm, err := cipher.NewGCM(block)
-		if err != nil {
-			log.Fatal("Couldn't init new GCM. ", err)
-		}
-
-		nonce := make([]byte, gcm.NonceSize())
-		if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-			fmt.Println("Couldn't populate nounce. ", err)
+			log.Fatal("Can't create a Stream Encrypter.", err)
 		}
 	}
 
 	client, err := c.RegisterClient(ctx, &proto.Empty{})
 	fmt.Printf("Your client ID: %s\n", client.Id)
-	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n\n", client.Id)
+	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n", client.Id)
 	// Wait 3 seconds for user to copy the client ID
 	time.Sleep(3 * time.Second)
 
@@ -54,14 +38,16 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		row := scanner.Text()
-
 		// Print original input to client as well
 		fmt.Println(row)
 
-		if block != nil {
-			var encrypted []byte
-			block.Encrypt(encrypted, []byte(row))
-			row = string(encrypted)
+		if s != nil {
+			encryptedRow, err := s.Encrypt(row)
+			if err != nil {
+				log.Fatal("Can't encrypt the data.", err)
+			}
+			row = *encryptedRow
+			fmt.Printf("Encrypted row: %s\n", row)
 		}
 
 		content := proto.Content{
@@ -79,24 +65,24 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 }
 
 func main() {
-	keyphrase := flag.String("encrypt", "", "Keyphrase to encrypt your data with.")
+	password := flag.String("encrypt", "", "Password to encrypt your data with.")
 	flag.Parse()
 
 	conn, err := grpc.Dial(":50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal("Unable to connect to grpc", err)
+		log.Fatal("Unable to connect to gRPC server.", err)
 	}
 
 	client := proto.NewCli2CloudClient(conn)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if err := sendPipedMessages(client, ctx, keyphrase); err != nil {
-		log.Fatal("Error while sending to server", err)
+	if err := sendPipedMessages(client, ctx, password); err != nil {
+		log.Fatal("Error while sending to server.", err)
 	}
 
 	err = conn.Close()
 	if err != nil {
-		log.Fatal("Unable to close connection", err)
+		log.Fatal("Unable to close connection.", err)
 	}
 }
