@@ -2,7 +2,7 @@ import {Component} from "react";
 import styles from "../styles/Monitor.module.css";
 import {Cli2CloudClient} from "../proto/ServiceServiceClientPb"
 import {Client, Content} from "../proto/service_pb"
-import {DecryptionService} from "./Decrypt"
+import {DecryptionService} from "../services/DecryptionService"
 
 
 interface Row {

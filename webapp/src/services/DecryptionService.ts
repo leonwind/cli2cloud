@@ -3,8 +3,7 @@ import * as cryptoJS from "crypto-js"
 export class DecryptionService {
     keyLength: number = 8;
     numPBKDF2Iterations: number = 1024;
-
-    key: cryptoJS.lib.WordArray; // crypto.WordArray
+    key: cryptoJS.lib.WordArray;
     decryptor: any; // crypto.Cipher
 
     private kdf(password: string, salt: cryptoJS.lib.WordArray) {
@@ -29,6 +28,7 @@ export class DecryptionService {
             iv: cryptoJS.enc.Hex.parse(iv),
             padding: cryptoJS.pad.Pkcs7,
         });
+        this.decryptor = decryptor;
         
         const encrypted = cryptoJS.enc.Hex.parse("bb1f27dae3afa314e0c8a3e8ce06183399f208618ada31c7979e8a047e2cce11f29ab9e0d4df6aef25efefd1124a0ad5");
         let dec = decryptor.finalize(encrypted).toString(cryptoJS.enc.Latin1);
@@ -47,8 +47,8 @@ export class DecryptionService {
         console.log(dec4.toString(cryptoJS.enc.Latin1));
     }
 
-    public decrypt(encrypted: string): string {
-        //console.log("Decrypted: ", this.decryptor.process(encrypted).ciphertext.toString());
-        return encrypted;
+    public decrypt(encryptedStr: string): string {
+        const encrypted = cryptoJS.enc.Hex.parse(encryptedStr);
+        return this.decryptor.finalize(encrypted).toString(cryptoJS.enc.Latin1);
     }
 }
