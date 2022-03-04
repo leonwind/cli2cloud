@@ -5,19 +5,30 @@ option go_package = "github.com/leonwind/service/api/proto";
 package proto;
 
 service Cli2Cloud {
-  rpc RegisterClient(Empty) returns (Client);
-  rpc Publish(stream Content) returns (Empty);
-  rpc Subscribe(Client) returns (stream Content);
-}
-
-message Content {
-  string Payload = 1;
-  optional int64 Row = 3;
-  Client client = 2;
+  rpc RegisterClient(Client) returns (ClientId);
+  rpc GetClientById(ClientId) returns (Client);
+  rpc Publish(stream PublishRequest) returns (Empty);
+  rpc Subscribe(ClientId) returns (stream Payload);
 }
 
 message Client {
+  bool encrypted = 1;
+  optional string salt = 2;
+  optional string iv = 3;
+  optional int64 timestamp = 4;
+}
+
+message ClientId {
   string Id = 1;
 }
 
-message Empty {}
+message PublishRequest {
+  ClientId clientId = 1;
+  Payload payload = 2;
+}
+
+message Payload {
+  string body = 1;
+}
+
+message Empty{}

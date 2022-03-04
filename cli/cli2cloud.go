@@ -26,9 +26,16 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 		}
 	}
 
-	client, err := c.RegisterClient(ctx, &proto.Empty{})
-	fmt.Printf("Your client ID: %s\n", client.Id)
-	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n", client.Id)
+	client := proto.Client{
+		Encrypted: false,
+		Salt:      nil,
+		Iv:        nil,
+		Timestamp: nil,
+	}
+
+	clientId, err := c.RegisterClient(ctx, &client)
+	fmt.Printf("Your client ID: %s\n", clientId.Id)
+	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n\n", clientId.Id)
 	// Wait 3 seconds for user to copy the client ID
 	//time.Sleep(3 * time.Second)
 
@@ -49,9 +56,9 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 			fmt.Println("Encrypted row: ", row)
 		}
 
-		content := proto.Content{
-			Payload: row,
-			Client:  client,
+		content := proto.PublishRequest{
+			Payload:  &proto.Payload{Body: row},
+			ClientId: clientId,
 		}
 
 		if err := stream.Send(&content); err != nil {

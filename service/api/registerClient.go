@@ -14,23 +14,21 @@ import (
 
 const idLength = 6
 
-func (s *Service) RegisterClient(ctx context.Context, _ *proto.Empty) (*proto.Client, error) {
+func (s *Service) RegisterClient(ctx context.Context, client *proto.Client) (*proto.ClientId, error) {
 	p, ok := peer.FromContext(ctx)
 	if !ok {
 		return nil, fmt.Errorf("failed to extract peer-info")
 	}
 
-	clientID := createNewID(p.Addr.String())
-	client := &proto.Client{
-		Id: clientID,
-	}
+	clientId := proto.ClientId{Id: createNewID(p.Addr.String())}
 
-	if err := s.db.RegisterClient(client); err != nil {
-		log.Println("Couldn't insert user", err)
+	if err := s.db.RegisterClient(clientId.Id, client.Encrypted, client.Salt, client.Iv); err != nil {
+		log.Println("Couldn't insert into clients", err)
 		return nil, err
 	}
+	log.Printf("Registered new user %s\n", clientId.Id)
 
-	return client, nil
+	return &clientId, nil
 }
 
 // Create valid and unique ID for a client based on ones ip address and the current timestamp.
@@ -51,4 +49,21 @@ func encodeBase62(toEncode [16]byte) string {
 	encoded := big.NewInt(0)
 	encoded.SetBytes(toEncode[:])
 	return encoded.Text(62)
+}
+
+func (s *Service) GetClientById(_ context.Context, clientId *proto.ClientId) (*proto.Client, error) {
+	encrypted, salt, iv, err := s.db.GetClientById(clientId.Id)
+	if err != nil {
+		log.Printf("Couldn't fetch client details for id %s.\n", clientId.Id)
+		log.Println(err)
+		return nil, err
+	}
+
+	client := proto.Client{
+		Encrypted: encrypted,
+		Salt:      salt,
+		Iv:        iv,
+		Timestamp: nil,
+	}
+	return &client, nil
 }
