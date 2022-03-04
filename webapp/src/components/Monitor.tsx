@@ -2,6 +2,7 @@ import {Component} from "react";
 import styles from "../styles/Monitor.module.css";
 import {Cli2CloudClient} from "../proto/ServiceServiceClientPb"
 import {Client, Content} from "../proto/service_pb"
+import {DecryptionService} from "./Decrypt"
 
 
 interface Row {
@@ -11,6 +12,8 @@ interface Row {
 
 interface State {
     contents: Row[],
+    encrypted: boolean,
+    decryptor: DecryptionService | null,
 }
 
 export class Monitor extends Component<{}, State> {
@@ -21,7 +24,9 @@ export class Monitor extends Component<{}, State> {
         super(props);
 
         this.state = {
-            contents: []
+            contents: [],
+            encrypted: true,
+            decryptor: new DecryptionService("123", "", ""),
         };
 
         this.clientID = window.location.pathname.substring(1);
@@ -44,7 +49,8 @@ export class Monitor extends Component<{}, State> {
         const stream = this.cli2CloudService.subscribe(client, {});
 
         stream.on("data", (response: Content) => {
-            this.addNewContent(response);
+            const payload = this.state.decryptor!.decrypt(response.getPayload())
+            this.addNewContent(payload, response.getRow());
         });
 
         stream.on("error", (error: Error): void => {
@@ -52,11 +58,11 @@ export class Monitor extends Component<{}, State> {
         });
     }
 
-    private addNewContent(new_row: Content) {
+    private addNewContent(payload: string, line: number) {
         let new_content: Row[] = this.state.contents;
         new_content.push({
-            content: new_row.getPayload(), 
-            line: new_row.getRow()
+            content: payload, 
+            line: line
         });
 
         this.setState({contents: new_content});

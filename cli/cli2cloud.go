@@ -5,13 +5,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
-	"os"
-	"time"
-
 	"github.com/leonwind/cli2cloud/service/api/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"log"
+	"os"
 )
 
 func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *string) error {
@@ -32,7 +30,7 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 	fmt.Printf("Your client ID: %s\n", client.Id)
 	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n", client.Id)
 	// Wait 3 seconds for user to copy the client ID
-	time.Sleep(3 * time.Second)
+	//time.Sleep(3 * time.Second)
 
 	// TODO: Scan Stderr as well
 	scanner := bufio.NewScanner(os.Stdin)
@@ -48,6 +46,7 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 				return err
 			}
 			row = *encryptedRow
+			fmt.Println("Encrypted row: ", row)
 		}
 
 		content := proto.Content{
