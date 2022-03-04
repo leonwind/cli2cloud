@@ -65,10 +65,11 @@ func (psql *Psql) GetClientById(clientId string) (bool, *string, *string, error)
 	var salt sql.NullString
 	var iv sql.NullString
 
-	if err := queriedRow.Scan(encrypted, salt, iv); err != nil {
-		return false, nil, nil, err
+	for queriedRow.Next() {
+		if err := queriedRow.Scan(&encrypted, &salt, &iv); err != nil {
+			return false, nil, nil, err
+		}
 	}
-
 	return encrypted, nullStringToPtr(salt), nullStringToPtr(iv), nil
 }
 
