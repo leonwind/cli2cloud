@@ -13,8 +13,8 @@ type Service struct {
 	db storage.Database
 }
 
-func NewServer() (*Service, error) {
-	psql, err := storage.InitPostgres()
+func NewServer(dbUrl string) (*Service, error) {
+	psql, err := storage.InitPostgres(dbUrl)
 	if err != nil {
 		return nil, err
 	}

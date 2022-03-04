@@ -5,14 +5,15 @@ import (
 	"io"
 	"log"
 	"service/api/proto"
+	"service/internal/storage"
 )
 
 func (s *Service) Publish(stream proto.Cli2Cloud_PublishServer) error {
-	var row int64 = 0
+	var line int64 = 0
 
 	for {
-		var content *proto.Content
-		content, err := stream.Recv()
+		var request *proto.PublishRequest
+		request, err := stream.Recv()
 
 		if err == io.EOF {
 			return stream.SendAndClose(&proto.Empty{})
@@ -22,14 +23,19 @@ func (s *Service) Publish(stream proto.Cli2Cloud_PublishServer) error {
 			return err
 		}
 
-		message := fmt.Sprintf("Received from client %s, line %d: %s", content.Client.Id, row, content.Payload)
+		row := storage.Row{
+			Content: request.Payload.Body,
+			Line:    line,
+		}
+
+		message := fmt.Sprintf("Received from client %s, line %d: %s", request.ClientId.Id, line, row.Content)
 		log.Println(message)
 
-		if err := s.db.WriteContent(content, row); err != nil {
+		if err := s.db.WriteContent(request.ClientId.Id, row); err != nil {
 			log.Println("Couldn't write content to psql", err)
 			return err
 		}
 
-		row++
+		line++
 	}
 }

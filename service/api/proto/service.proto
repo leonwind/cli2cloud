@@ -13,8 +13,8 @@ service Cli2Cloud {
 
 message Client {
   bool encrypted = 1;
-  optional bytes salt = 2;
-  optional bytes iv = 3;
+  optional string salt = 2;
+  optional string iv = 3;
   optional int64 timestamp = 4;
 }
 
