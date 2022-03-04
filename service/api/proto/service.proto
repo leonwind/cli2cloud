@@ -15,6 +15,7 @@ message Client {
   bool encrypted = 1;
   optional bytes salt = 2;
   optional bytes iv = 3;
+  optional int64 timestamp = 4;
 }
 
 message ClientId {
@@ -31,17 +32,3 @@ message Payload {
 }
 
 message Empty{}
-
-/*
-message Content {
-  string Payload = 1;
-  optional int64 Row = 3;
-  Client client = 2;
-}
-
-message Client {
-  string Id = 1;
-}
-
-message Empty {}
- */
