@@ -4,13 +4,11 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"log"
-	"os"
-	"time"
-
 	"github.com/leonwind/cli2cloud/service/api/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"log"
+	"os"
 )
 
 func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context) error {
@@ -19,11 +17,18 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context) error {
 		return err
 	}
 
-	client, err := c.RegisterClient(ctx, &proto.Empty{})
-	fmt.Printf("Your client ID: %s\n", client.Id)
-	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n\n", client.Id)
+	client := proto.Client{
+		Encrypted: false,
+		Salt:      nil,
+		Iv:        nil,
+		Timestamp: nil,
+	}
+
+	clientId, err := c.RegisterClient(ctx, &client)
+	fmt.Printf("Your client ID: %s\n", clientId.Id)
+	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n\n", clientId.Id)
 	// Wait 3 seconds for user to copy the client ID
-	time.Sleep(3 * time.Second)
+	//time.Sleep(3 * time.Second)
 
 	// TODO: Scan Stderr as well
 	scanner := bufio.NewScanner(os.Stdin)
@@ -33,9 +38,9 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context) error {
 		// Print original input to client as well
 		fmt.Println(row)
 
-		content := proto.Content{
-			Payload: fmt.Sprintf(row),
-			Client:  client,
+		content := proto.PublishRequest{
+			Payload:  &proto.Payload{Body: row},
+			ClientId: clientId,
 		}
 
 		if err := stream.Send(&content); err != nil {
