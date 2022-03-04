@@ -6,17 +6,13 @@ export class Client extends jspb.Message {
   getEncrypted(): boolean;
   setEncrypted(value: boolean): Client;
 
-  getSalt(): Uint8Array | string;
-  getSalt_asU8(): Uint8Array;
-  getSalt_asB64(): string;
-  setSalt(value: Uint8Array | string): Client;
+  getSalt(): string;
+  setSalt(value: string): Client;
   hasSalt(): boolean;
   clearSalt(): Client;
 
-  getIv(): Uint8Array | string;
-  getIv_asU8(): Uint8Array;
-  getIv_asB64(): string;
-  setIv(value: Uint8Array | string): Client;
+  getIv(): string;
+  setIv(value: string): Client;
   hasIv(): boolean;
   clearIv(): Client;
 
@@ -36,8 +32,8 @@ export class Client extends jspb.Message {
 export namespace Client {
   export type AsObject = {
     encrypted: boolean,
-    salt?: Uint8Array | string,
-    iv?: Uint8Array | string,
+    salt?: string,
+    iv?: string,
     timestamp?: number,
   }
 

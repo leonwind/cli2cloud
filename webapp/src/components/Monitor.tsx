@@ -1,7 +1,7 @@
 import {Component} from "react";
 import styles from "../styles/Monitor.module.css";
 import {Cli2CloudClient} from "../proto/ServiceServiceClientPb"
-import {Client, Content} from "../proto/service_pb"
+import {Client, ClientId, Payload} from "../proto/service_pb"
 
 
 interface Row {
@@ -14,18 +14,25 @@ interface State {
 }
 
 export class Monitor extends Component<{}, State> {
+    private numLines: number;
     private cli2CloudService: Cli2CloudClient;
-    private clientID: string;
+    private client: Promise<Client>;
+    private clientId: ClientId;
 
     constructor(props: any) {
         super(props);
 
         this.state = {
-            contents: []
+            contents: [],
         };
-
-        this.clientID = window.location.pathname.substring(1);
+        
+        this.numLines = 0;
         this.cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null)
+        this.clientId = new ClientId();
+        this.clientId.setId(window.location.pathname.substring(1));        
+        this.client = this.cli2CloudService.getClientById(this.clientId, {});
+        console.log(this.clientId);
+        console.log(this.client);
 
         this.loadContent = this.loadContent.bind(this);
         this.addNewContent = this.addNewContent.bind(this);
@@ -38,13 +45,14 @@ export class Monitor extends Component<{}, State> {
     }
 
     private loadContent() {
-        const client = new Client();
-        client.setId(this.clientID)
+        const stream = this.cli2CloudService.subscribe(this.clientId, {});
 
-        const stream = this.cli2CloudService.subscribe(client, {});
-
-        stream.on("data", (response: Content) => {
-            this.addNewContent(response);
+        stream.on("data", async (response: Payload) => {
+            if ((await this.client).getEncrypted()) {
+                this.addNewContent(response.getBody());    
+            } else {
+                this.addNewContent(response.getBody());
+            }
         });
 
         stream.on("error", (error: Error): void => {
@@ -52,13 +60,15 @@ export class Monitor extends Component<{}, State> {
         });
     }
 
-    private addNewContent(new_row: Content) {
+    private addNewContent(content: string) {
         let new_content: Row[] = this.state.contents;
+        
         new_content.push({
-            content: new_row.getPayload(), 
-            line: new_row.getRow()
+            content: content,
+            line: this.numLines,
         });
 
+        this.numLines += 1
         this.setState({contents: new_content});
     } 
 
@@ -68,10 +78,10 @@ export class Monitor extends Component<{}, State> {
 
     private createDivsForAllRows(): JSX.Element[] {
         return this.state.contents.map((row: Row) => 
-            <div className={styles.row} id={row.line.toString()} key={row.line}>
+            <li className={styles.row} id={row.line.toString()} key={row.line}>
                 <span className={styles.line} onClick={() => this.highlightRow(row.line)}>{row.line}</span>
                 <span className={styles.content}>{row.content}</span>
-            </div>
+            </li>
         );
     }
 
@@ -79,7 +89,7 @@ export class Monitor extends Component<{}, State> {
         let allRows: JSX.Element[];
 
         if (this.state.contents.length === 0) {
-            allRows = [<div>No output for client ID "{this.clientID}".</div>];
+            allRows = [<div>No output for client ID "{this.clientId.getId()}".</div>];
         } else {
             allRows = this.createDivsForAllRows();
         }

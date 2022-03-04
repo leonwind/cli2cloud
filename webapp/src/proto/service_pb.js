@@ -164,8 +164,8 @@ proto.proto.Client.prototype.toObject = function(opt_includeInstance) {
 proto.proto.Client.toObject = function(includeInstance, msg) {
   var f, obj = {
     encrypted: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
-    salt: msg.getSalt_asB64(),
-    iv: msg.getIv_asB64(),
+    salt: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    iv: jspb.Message.getFieldWithDefault(msg, 3, ""),
     timestamp: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
@@ -208,11 +208,11 @@ proto.proto.Client.deserializeBinaryFromReader = function(msg, reader) {
       msg.setEncrypted(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setSalt(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setIv(value);
       break;
     case 4:
@@ -255,16 +255,16 @@ proto.proto.Client.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeBytes(
+    writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeBytes(
+    writer.writeString(
       3,
       f
     );
@@ -298,40 +298,16 @@ proto.proto.Client.prototype.setEncrypted = function(value) {
 
 
 /**
- * optional bytes salt = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.proto.Client.prototype.getSalt = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes salt = 2;
- * This is a type-conversion wrapper around `getSalt()`
+ * optional string salt = 2;
  * @return {string}
  */
-proto.proto.Client.prototype.getSalt_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getSalt()));
+proto.proto.Client.prototype.getSalt = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes salt = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getSalt()`
- * @return {!Uint8Array}
- */
-proto.proto.Client.prototype.getSalt_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getSalt()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.proto.Client} returns this
  */
 proto.proto.Client.prototype.setSalt = function(value) {
@@ -358,40 +334,16 @@ proto.proto.Client.prototype.hasSalt = function() {
 
 
 /**
- * optional bytes iv = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.proto.Client.prototype.getIv = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes iv = 3;
- * This is a type-conversion wrapper around `getIv()`
+ * optional string iv = 3;
  * @return {string}
  */
-proto.proto.Client.prototype.getIv_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getIv()));
+proto.proto.Client.prototype.getIv = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * optional bytes iv = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getIv()`
- * @return {!Uint8Array}
- */
-proto.proto.Client.prototype.getIv_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getIv()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.proto.Client} returns this
  */
 proto.proto.Client.prototype.setIv = function(value) {

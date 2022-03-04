@@ -90,7 +90,7 @@ func (psql *Psql) WriteContent(clientId string, row Row) error {
 // ReadContent Return all rows of the client which are newer (greater) than the given row.
 func (psql *Psql) ReadContent(clientId string, line int64) ([]Row, error) {
 	queryString := "SELECT content, line FROM cli_storage " +
-		"WHERE clientId = %1 AND line >= $2 " +
+		"WHERE clientId = $1 AND line >= $2 " +
 		"ORDER BY line " +
 		"LIMIT 100;"
 

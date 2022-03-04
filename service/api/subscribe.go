@@ -20,6 +20,8 @@ func (s *Service) Subscribe(clientId *proto.ClientId, stream proto.Cli2Cloud_Sub
 		default:
 			rows, err := s.db.ReadContent(clientId.Id, line)
 			if err != nil {
+				log.Printf("Couldn't get content from database for client %s\n", clientId.Id)
+				log.Println(err)
 				return err
 			}
 
