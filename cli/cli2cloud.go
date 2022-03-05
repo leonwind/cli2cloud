@@ -21,10 +21,13 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 
 	var s *StreamEncrypter
 	if password != nil {
+		if *password == "" {
+			log.Fatal("Password cannot be empty.")
+		}
+
 		s, err = NewStreamEncrypter(*password)
 		if err != nil {
 			log.Fatal("Can't create a Stream Encrypter.", err)
-			return err
 		}
 	}
 
@@ -36,7 +39,7 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 
 	clientId, err := c.RegisterClient(ctx, &client)
 	fmt.Printf("Your client ID: %s\n", clientId.Id)
-	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n\n", clientId.Id)
+	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n", clientId.Id)
 	// Wait 2 seconds for user to copy the client ID
 	time.Sleep(2 * time.Second)
 
