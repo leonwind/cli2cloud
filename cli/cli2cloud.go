@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"os"
+	"time"
 )
 
 func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *string) error {
@@ -23,21 +24,21 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 		s, err = NewStreamEncrypter(*password)
 		if err != nil {
 			log.Fatal("Can't create a Stream Encrypter.", err)
+			return err
 		}
 	}
 
 	client := proto.Client{
-		Encrypted: false,
-		Salt:      nil,
-		Iv:        nil,
-		Timestamp: nil,
+		Encrypted: s != nil,
+		Salt:      s.GetSaltAsHex(),
+		Iv:        s.GetIVAsHex(),
 	}
 
 	clientId, err := c.RegisterClient(ctx, &client)
 	fmt.Printf("Your client ID: %s\n", clientId.Id)
 	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n\n", clientId.Id)
-	// Wait 3 seconds for user to copy the client ID
-	//time.Sleep(3 * time.Second)
+	// Wait 2 seconds for user to copy the client ID
+	time.Sleep(2 * time.Second)
 
 	// TODO: Scan Stderr as well
 	scanner := bufio.NewScanner(os.Stdin)
@@ -53,7 +54,6 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 				return err
 			}
 			row = *encryptedRow
-			fmt.Println("Encrypted row: ", row)
 		}
 
 		content := proto.PublishRequest{

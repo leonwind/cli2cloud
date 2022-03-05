@@ -12,36 +12,30 @@ interface Row {
 
 interface State {
     contents: Row[],
-    encrypted: boolean,
-    decryptor: DecryptionService | null,
 }
 
 export class Monitor extends Component<{}, State> {
     private numLines: number;
     private cli2CloudService: Cli2CloudClient;
-    private client: Promise<Client>;
     private clientId: ClientId;
+    private decryptor: Promise<DecryptionService | null>;
 
     constructor(props: any) {
         super(props);
 
         this.state = {
             contents: [],
-            encrypted: true,
-            decryptor: new DecryptionService("123", "", ""),
         };
         
         this.numLines = 0;
         this.cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null)
         this.clientId = new ClientId();
-        this.clientId.setId(window.location.pathname.substring(1));        
-        this.client = this.cli2CloudService.getClientById(this.clientId, {});
+        this.clientId.setId(window.location.pathname.substring(1));
+        this.decryptor = this.createDecryptor()
+
         console.log(this.clientId);
-        console.log(this.client);
 
         this.loadContent = this.loadContent.bind(this);
-        this.addNewContent = this.addNewContent.bind(this);
-        this.createDivsForAllRows = this.createDivsForAllRows.bind(this);
         this.highlightRow = this.highlightRow.bind(this);
     }
 
@@ -49,15 +43,32 @@ export class Monitor extends Component<{}, State> {
         this.loadContent();
     }
 
+    private async createDecryptor(): Promise<DecryptionService | null> {
+        return await this.cli2CloudService.getClientById(this.clientId, {}).then((client: Client) => {
+            console.log(client);
+            if (client.getEncrypted()) {
+                console.log("Encrypted: ", client.getSalt(), client.getIv());
+                return new DecryptionService("123", client.getSalt(), client.getIv());
+            }
+            console.log("Not encrypted: ", client.getEncrypted());
+            return null; 
+        })
+        .catch(() => {
+            return null;
+        });
+    }
+
     private loadContent() {
         const stream = this.cli2CloudService.subscribe(this.clientId, {});
 
-        stream.on("data", async (response: Payload) => {
-            if ((await this.client).getEncrypted()) {
-                this.addNewContent(response.getBody());    
-            } else {
-                this.addNewContent(response.getBody());
-            }
+        stream.on("data", (response: Payload) => {
+            this.decryptor.then((decryptor) => {
+                if (decryptor === null) {
+                    this.addNewContent(response.getBody())
+                } else {
+                    this.addNewContent(decryptor.decrypt(response.getBody()))
+                }
+            })
         });
 
         stream.on("error", (error: Error): void => {

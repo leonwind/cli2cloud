@@ -55,16 +55,12 @@ func NewStreamEncrypter(password string) (*StreamEncrypter, error) {
 	iv := make([]byte, block.BlockSize())
 
 	_, err = rand.Read(iv)
-	fmt.Println("Key: ", hex.EncodeToString(key))
-	fmt.Println("IV: ", hex.EncodeToString(iv))
-	fmt.Println("Salt: ", hex.EncodeToString(salt))
 	if err != nil {
 		return nil, err
 	}
 
 	blockMode := cipher.NewCBCEncrypter(block, iv)
 	mac := hmac.New(sha256.New, key)
-	fmt.Println("BlockSize: ", block.BlockSize())
 
 	return &StreamEncrypter{
 		Block: block,
@@ -78,7 +74,6 @@ func NewStreamEncrypter(password string) (*StreamEncrypter, error) {
 // Encrypt encrypts the given row and returns the byte array encoded as a Hex string.
 func (s *StreamEncrypter) Encrypt(row string) (*string, error) {
 	plaintext := pkcs7Padding([]byte(row), s.Block.BlockSize())
-	fmt.Println("Received: ", hex.EncodeToString(plaintext))
 	encrypted := make([]byte, len(plaintext))
 	s.Mode.CryptBlocks(encrypted, plaintext)
 
@@ -88,7 +83,6 @@ func (s *StreamEncrypter) Encrypt(row string) (*string, error) {
 
 func pkcs7Padding(src []byte, blockSize int) []byte {
 	paddingLength := blockSize - (len(src) % blockSize)
-	fmt.Println(blockSize, len(src), paddingLength)
 	padding := bytes.Repeat([]byte{byte(paddingLength)}, paddingLength)
 	return append(src, padding...)
 }
@@ -104,4 +98,20 @@ func writeHash(encrypted []byte, mac hash.Hash) error {
 	}
 
 	return nil
+}
+
+func (s *StreamEncrypter) GetSaltAsHex() *string {
+	if s == nil {
+		return nil
+	}
+	hexSalt := hex.EncodeToString(s.Salt)
+	return &hexSalt
+}
+
+func (s *StreamEncrypter) GetIVAsHex() *string {
+	if s == nil {
+		return nil
+	}
+	hexIV := hex.EncodeToString(s.IV)
+	return &hexIV
 }
