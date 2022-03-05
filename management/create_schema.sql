@@ -21,61 +21,63 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: cli_output; Type: TABLE; Schema: public; Owner: leon.windheuser
+-- Name: cli_storage; Type: TABLE; Schema: public; Owner: leon.windheuser
 --
 
-CREATE TABLE public.cli_output (
-    userid text NOT NULL,
-    "row" integer NOT NULL,
-    content text NOT NULL
+CREATE TABLE public.cli_storage (
+    clientid text NOT NULL,
+    content text NOT NULL,
+    line integer NOT NULL
 );
 
 
-ALTER TABLE public.cli_output OWNER TO "leon.windheuser";
+ALTER TABLE public.cli_storage OWNER TO "leon.windheuser";
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: leon.windheuser
+-- Name: clients; Type: TABLE; Schema: public; Owner: leon.windheuser
 --
 
-CREATE TABLE public.users (
+CREATE TABLE public.clients (
     id text NOT NULL,
     encrypted boolean NOT NULL,
+    salt text,
+    iv text,
     created timestamp with time zone NOT NULL
 );
 
 
-ALTER TABLE public.users OWNER TO "leon.windheuser";
+ALTER TABLE public.clients OWNER TO "leon.windheuser";
 
 --
--- Data for Name: cli_output; Type: TABLE DATA; Schema: public; Owner: leon.windheuser
+-- Data for Name: cli_storage; Type: TABLE DATA; Schema: public; Owner: leon.windheuser
 --
 
-COPY public.cli_output (userid, "row", content) FROM stdin;
+COPY public.cli_storage (clientid, content, line) FROM stdin;
 \.
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: leon.windheuser
+-- Data for Name: clients; Type: TABLE DATA; Schema: public; Owner: leon.windheuser
 --
 
-COPY public.users (id, encrypted, created) FROM stdin;
+COPY public.clients (id, encrypted, salt, iv, created) FROM stdin;
 \.
 
 
 --
--- Name: cli_output cli_output_pkey; Type: CONSTRAINT; Schema: public; Owner: leon.windheuser
+-- Name: clients clients_pkey; Type: CONSTRAINT; Schema: public; Owner: leon.windheuser
 --
 
-ALTER TABLE ONLY public.cli_output
-    ADD CONSTRAINT cli_output_pkey PRIMARY KEY (userid);
+ALTER TABLE ONLY public.clients
+    ADD CONSTRAINT clients_pkey PRIMARY KEY (id);
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: leon.windheuser
+-- Name: cli_storage cli_storage_clientid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: leon.windheuser
 --
 
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.cli_storage
+    ADD CONSTRAINT cli_storage_clientid_fkey FOREIGN KEY (clientid) REFERENCES public.clients(id);
 
 
 --
