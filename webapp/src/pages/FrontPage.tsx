@@ -37,6 +37,7 @@ export class FrontPage extends Component<{}, State> {
                 <Navigate to={"/" + this.state.clientID}/>
             )
         }
+
         return (
             <div className={styles.body}>
 

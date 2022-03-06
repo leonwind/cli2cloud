@@ -13,19 +13,34 @@ import (
 	"time"
 )
 
-func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *string) error {
+type stringFlag struct {
+	set   bool
+	value string
+}
+
+func (sf *stringFlag) Set(x string) error {
+	sf.value = x
+	sf.set = true
+	return nil
+}
+
+func (sf *stringFlag) String() string {
+	return sf.value
+}
+
+func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password stringFlag) error {
 	stream, err := c.Publish(ctx)
 	if err != nil {
 		return err
 	}
 
 	var s *StreamEncrypter
-	if password != nil {
-		if *password == "" {
+	if password.set {
+		if password.value == "" {
 			log.Fatal("Password cannot be empty.")
 		}
 
-		s, err = NewStreamEncrypter(*password)
+		s, err = NewStreamEncrypter(password.value)
 		if err != nil {
 			log.Fatal("Can't create a Stream Encrypter.", err)
 		}
@@ -74,7 +89,8 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 }
 
 func main() {
-	password := flag.String("encrypt", "", "Password to encrypt your data with.")
+	var password stringFlag
+	flag.Var(&password, "encrypt", "Password to encrypto your data with.")
 	flag.Parse()
 
 	conn, err := grpc.Dial(":50051", grpc.WithTransportCredentials(insecure.NewCredentials()))

@@ -3,8 +3,8 @@ import {
     Routes, 
     Route 
 } from "react-router-dom";
-import {FrontPage} from './components/FrontPage'
-import {Monitor} from './components/Monitor'
+import {FrontPage} from './pages/FrontPage'
+import {Monitor} from './pages/Monitor'
 
 export function App (){
     return (
