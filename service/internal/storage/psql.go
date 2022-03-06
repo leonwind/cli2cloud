@@ -4,12 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"github.com/jackc/pgx/v4/pgxpool"
+	. "service/internal"
 )
-
-type Row struct {
-	Content string
-	Line    int64
-}
 
 type Database interface {
 	RegisterClient(clientId string, encrypted bool, salt *string, iv *string) error

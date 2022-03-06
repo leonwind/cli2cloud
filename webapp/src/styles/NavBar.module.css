@@ -1,0 +1,25 @@
+.body {
+    min-height: 45px;
+    max-height: 70px;
+    top: 0;
+    background-color: #282828;
+    padding: 20px;
+}
+
+.brand {
+    font-size: x-large;
+    color: #e7e7e7;
+    opacity: 0.66;
+}
+
+.searchForm {
+    margin: auto;
+    color: #ffffff !important;
+    background-color: #1c1c1c !important;
+    border: 0px !important;
+    border-radius: 10px !important;
+}
+
+.searchForm:focus {
+    box-shadow: none !important;
+}

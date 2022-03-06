@@ -3,6 +3,7 @@ import styles from "../styles/Monitor.module.css";
 import {Cli2CloudClient} from "../proto/ServiceServiceClientPb"
 import {Client, ClientId, Payload} from "../proto/service_pb"
 import {DecryptionService} from "../services/DecryptionService"
+import {NavBar} from "./NavBar"
 
 
 interface Row {
@@ -33,8 +34,6 @@ export class Monitor extends Component<{}, State> {
         this.clientId.setId(window.location.pathname.substring(1));
         this.decryptor = this.createDecryptor()
 
-        console.log(this.clientId);
-
         this.loadContent = this.loadContent.bind(this);
         this.highlightRow = this.highlightRow.bind(this);
     }
@@ -45,12 +44,9 @@ export class Monitor extends Component<{}, State> {
 
     private async createDecryptor(): Promise<DecryptionService | null> {
         return await this.cli2CloudService.getClientById(this.clientId, {}).then((client: Client) => {
-            console.log(client);
             if (client.getEncrypted()) {
-                console.log("Encrypted: ", client.getSalt(), client.getIv());
                 return new DecryptionService("123", client.getSalt(), client.getIv());
             }
-            console.log("Not encrypted: ", client.getEncrypted());
             return null; 
         })
         .catch(() => {
@@ -94,10 +90,10 @@ export class Monitor extends Component<{}, State> {
 
     private createDivsForAllRows(): JSX.Element[] {
         return this.state.contents.map((row: Row) => 
-            <li className={styles.row} id={row.line.toString()} key={row.line}>
+            <div className={styles.row} id={row.line.toString()} key={row.line}>
                 <span className={styles.line} onClick={() => this.highlightRow(row.line)}>{row.line}</span>
                 <span className={styles.content}>{row.content}</span>
-            </li>
+            </div>
         );
     }
 
@@ -111,11 +107,14 @@ export class Monitor extends Component<{}, State> {
         }
 
         return (
-            <div className={styles.body}>
-                <div className={styles.outputArea}>
-                    {allRows}
+            <>
+                <NavBar/>
+                <div className={styles.body}>
+                    <div className={styles.outputArea}>
+                        {allRows}
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 }

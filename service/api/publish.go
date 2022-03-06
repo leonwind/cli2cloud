@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 	"service/api/proto"
-	"service/internal/storage"
+	. "service/internal"
 )
 
 func (s *Service) Publish(stream proto.Cli2Cloud_PublishServer) error {
@@ -23,7 +23,7 @@ func (s *Service) Publish(stream proto.Cli2Cloud_PublishServer) error {
 			return err
 		}
 
-		row := storage.Row{
+		row := Row{
 			Content: request.Payload.Body,
 			Line:    line,
 		}

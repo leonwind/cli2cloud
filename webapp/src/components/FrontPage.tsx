@@ -28,7 +28,6 @@ export class FrontPage extends Component<{}, State> {
 
     private handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        console.log(this.state.clientID);
         this.setState({redirect: true})
     } 
 
