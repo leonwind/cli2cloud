@@ -1,9 +1,9 @@
-import React, {ChangeEvent, Component, FormEvent, useState} from "react";
+import {FormEvent, useState} from "react";
 import styles from "../styles/SearchBar.module.css";
-import {TextField} from "@mui/material"
-import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from "@material-ui/icons/Search";
 import { useNavigate } from "react-router-dom";
+import { Form } from "react-bootstrap";
+import { InputGroup } from "react-bootstrap";
 
 export const SearchBar = () => {
     const navigate = useNavigate();
@@ -16,18 +16,19 @@ export const SearchBar = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <TextField variant="outlined"
-                value={clientID} 
-                onChange={e => setClientID(e.target.value)} type="text" 
-                placeholder="Enter your client ID..."
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon/>
-                        </InputAdornment>
-                    )}}
-            /> 
-        </form>
+        <Form onSubmit={handleSubmit}>
+                <div className={styles.searchForm}>
+                    <Form.Group>
+                        <InputGroup>
+                            <Form.Control className={styles.searchForm} value={clientID} 
+                                onChange={e => setClientID(e.target.value)} type="text" 
+                                placeholder="Search your client ID..."/>
+                            <InputGroup.Text className={styles.searchForm}>
+                                <SearchIcon/>
+                            </InputGroup.Text>
+                        </InputGroup>
+                    </Form.Group>
+                </div>
+        </Form>
     )
 }

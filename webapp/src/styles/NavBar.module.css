@@ -4,9 +4,16 @@
     top: 0;
     background-color: #282828;
     padding: 20px;
+    z-index: 999;
 }
 
 .brand {
     font-size: x-large;
     color: #e7e7e7;
+    padding-right: 2%;
+}
+
+.buttons {
+    background-color:transparent;
+    border: 0px;
 }

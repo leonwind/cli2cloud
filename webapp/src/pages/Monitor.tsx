@@ -14,9 +14,9 @@ interface Row {
 
 interface State {
     encrypted: boolean,
+    enterPwdFirstTime: boolean,
     decryptor: DecryptionService | null,
-    inputPassword: boolean,
-    contents: Row[],
+    rows: Row[],
 }
 
 export class Monitor extends Component<{}, State> {
@@ -31,8 +31,8 @@ export class Monitor extends Component<{}, State> {
         this.state = {
             encrypted: false,
             decryptor: null,
-            inputPassword: true,
-            contents: [],
+            enterPwdFirstTime: true,
+            rows: [],
         };
         
         this.numLines = 0;
@@ -69,7 +69,7 @@ export class Monitor extends Component<{}, State> {
         const stream = this.cli2CloudService.subscribe(this.clientId, {});
 
         stream.on("data", (response: Payload) => {
-            this.addNewContent(this.decryptRowIfEncrypted(response.getBody()));
+            this.addNewContent(response.getBody())
         });
 
         stream.on("error", (error: Error): void => {
@@ -78,14 +78,14 @@ export class Monitor extends Component<{}, State> {
     }
 
     private addNewContent(content: string) {
-        let new_content: Row[] = this.state.contents;
-        new_content.push({
+        let newRows: Row[] = this.state.rows;
+        newRows.push({
             content: content,
             line: this.numLines,
         });
 
         this.numLines += 1
-        this.setState({contents: new_content});
+        this.setState({rows: newRows});
     } 
 
     private highlightRow(line: number) {
@@ -100,26 +100,32 @@ export class Monitor extends Component<{}, State> {
     }
 
     private createDivsForAllRows(): JSX.Element[] {
-        return this.state.contents.map((row: Row) => 
+        // Since we decrypt everything again, we need to init the decryptor from the beginning
+        // as well.
+        if (this.state.decryptor !== null) {
+            this.state.decryptor.createDecryptor();
+        }
+
+        return this.state.rows.map((row: Row) => 
             <div className={styles.row} id={row.line.toString()} key={row.line}>
                 <span className={styles.line} onClick={() => this.highlightRow(row.line)}>
                     {row.line}
                 </span>
                 <span className={styles.content}>
-                    {row.content}
+                    {this.decryptRowIfEncrypted(row.content)}
                 </span>
             </div>
         );
     }
 
     private afterFirstTimePassword() {
-        this.setState({inputPassword: false});
+        this.setState({enterPwdFirstTime: false});
     }
 
     render() {
         let allRows: JSX.Element[];
 
-        if (this.state.contents.length === 0) {
+        if (this.state.rows.length === 0) {
             allRows = [<div>No output for client ID "{this.clientId.getId()}".</div>];
         } else {
             allRows = this.createDivsForAllRows();
@@ -128,7 +134,7 @@ export class Monitor extends Component<{}, State> {
         return (
             <>
                 {this.state.encrypted && this.state.decryptor === null &&
-                <ChangeDecryptionPwd show={this.state.inputPassword} onSubmit={this.updatePassword} onClose={this.afterFirstTimePassword}/>}
+                <ChangeDecryptionPwd show={this.state.enterPwdFirstTime} onSubmit={this.updatePassword} onClose={this.afterFirstTimePassword}/>}
 
                 <NavBar showPasswordBtn={this.state.encrypted} onPasswordSubmit={this.updatePassword}/>
                 <div className={styles.body}>
