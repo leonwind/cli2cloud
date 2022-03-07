@@ -126,7 +126,7 @@ export class Monitor extends Component<{}, State> {
         let allRows: JSX.Element[];
 
         if (this.state.rows.length === 0) {
-            allRows = [<div>No output for client ID "{this.clientId.getId()}".</div>];
+            allRows = [<div>No output found for client "{this.clientId.getId()}".</div>];
         } else {
             allRows = this.createDivsForAllRows();
         }

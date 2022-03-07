@@ -5,7 +5,7 @@ import { Nav } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import { useState } from "react";
 import {ChangeDecryptionPwd} from "./ChangeDecryptionPwd"
-import GitHubIcon from '@mui/icons-material/GitHub';
+import logo from "../assets/cloudWhite.png";
 
 export const NavBar = ({showPasswordBtn, onPasswordSubmit}) => {
     const [showModal, setShowModal] = useState(false);
@@ -17,7 +17,7 @@ export const NavBar = ({showPasswordBtn, onPasswordSubmit}) => {
         <>
         <Navbar className={styles.body} expand={"md"} variant={"dark"} collapseOnSelect>
             <Navbar.Brand className={styles.brand} href={"/"}>
-                Cli2Cloud
+                <img src={logo} alt={"Logo"} width={"50"} height={"50"}/>
             </Navbar.Brand>
 
             <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
