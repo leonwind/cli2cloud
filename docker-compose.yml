@@ -4,7 +4,7 @@ services:
     container_name: postgres
     hostname: postgres
     volumes:
-      - ./management/postgres//postgres-data:/var/lib/postgresql/data
+      - ./management/postgres/postgres_data:/var/lib/postgresql/data
     build: ./management/postgres/
     ports: 
       - "5432:5432"
