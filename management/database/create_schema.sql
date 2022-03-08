@@ -49,22 +49,6 @@ CREATE TABLE public.clients (
 ALTER TABLE public.clients OWNER TO "leon.windheuser";
 
 --
--- Data for Name: cli_storage; Type: TABLE DATA; Schema: public; Owner: leon.windheuser
---
-
-COPY public.cli_storage (clientid, content, line) FROM stdin;
-\.
-
-
---
--- Data for Name: clients; Type: TABLE DATA; Schema: public; Owner: leon.windheuser
---
-
-COPY public.clients (id, encrypted, salt, iv, created) FROM stdin;
-\.
-
-
---
 -- Name: clients clients_pkey; Type: CONSTRAINT; Schema: public; Owner: leon.windheuser
 --
 
