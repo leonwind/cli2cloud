@@ -7,7 +7,7 @@ import (
 
 const (
 	port  = ":50051"
-	dbUrl = "postgres://leon.windheuser@localhost:5432/cli2cloud"
+	dbUrl = "postgres://cli2cloud:123@postgres:5432/cli2cloud"
 )
 
 func main() {

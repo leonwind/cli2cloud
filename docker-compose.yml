@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  postgres:
+    container_name: postgres
+    hostname: postgres
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    build: ./management/postgres/
+    ports: 
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=cli2cloud
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=cli2cloud
+
+  backend:
+    container_name: backend
+    ports: 
+      - "50051:50051"
+        #environment:
+      #- DATABASE_CONNECTION=${DB_CONNECTION}
+      #- DATABASE_USER=cli2cloud
+      #- DATABASE_PWD=123
+    depends_on:
+      - postgres
+    build: ./service
+
+      #envoy:
+      #build: ./management/proxies
+      #ports:
+      #- "8000:8000"
+
