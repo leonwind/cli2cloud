@@ -10,8 +10,8 @@ import (
 const configFile = "config.yaml"
 
 type Config struct {
-	Service  ServiceConfig  `yaml:"service"`
-	Database DatabaseConfig `yaml:"database"`
+	Service  *ServiceConfig  `yaml:"service"`
+	Database *DatabaseConfig `yaml:"database"`
 }
 
 type ServiceConfig struct {
@@ -21,13 +21,6 @@ type ServiceConfig struct {
 type DatabaseConfig struct {
 	Url string `yaml:"url"`
 }
-
-/*
-const (
-	port  = ":50051"
-	dbUrl = "postgres://cli2cloud:123@postgres:5432/cli2cloud"
-)
-*/
 
 func readConfig() Config {
 	var config = Config{}
@@ -41,20 +34,22 @@ func readConfig() Config {
 	if err != nil {
 		log.Fatal("Error while unmarshalling", err)
 	}
-	log.Println(config)
 
 	return config
 }
 
 func main() {
 	config := readConfig()
-	log.Println("DB URL: ", config.Database.Url)
-	service, err := api.NewServer(config.Database.Url)
+	dbUrl := (*config.Database).Url
+	port := (*config.Service).Port
+	log.Println(dbUrl, port)
+
+	service, err := api.NewServer(dbUrl)
 	if err != nil {
 		log.Fatal("Cant create server", err)
 	}
 
-	if err := service.Start(config.Service.Port); err != nil {
+	if err := service.Start(port); err != nil {
 		log.Fatal("Can't start server", err)
 	}
 }
