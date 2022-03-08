@@ -6,6 +6,7 @@ require (
 	github.com/jackc/pgx/v4 v4.15.0
 	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.27.1
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
 
 require (

@@ -1,0 +1,5 @@
+service:
+  port: ":50051"
+
+database:
+  url: "postgres://cli2cloud:${POSTGRES_PASSWORD}@postgres:5432/cli2cloud"
