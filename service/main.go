@@ -47,7 +47,6 @@ func main() {
 	config := readConfig()
 	dbUrl := createPostgresUrl(config.Database)
 	port := (*config.Service).Port
-	log.Println(dbUrl, port)
 
 	service, err := api.NewServer(dbUrl)
 	if err != nil {
