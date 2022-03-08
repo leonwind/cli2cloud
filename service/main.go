@@ -4,6 +4,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
+	"os"
 	"service/api"
 )
 
@@ -38,9 +39,13 @@ func readConfig() Config {
 	return config
 }
 
+func createPostgresUrl(dC *DatabaseConfig) string {
+	return os.ExpandEnv(dC.Url)
+}
+
 func main() {
 	config := readConfig()
-	dbUrl := (*config.Database).Url
+	dbUrl := createPostgresUrl(config.Database)
 	port := (*config.Service).Port
 	log.Println(dbUrl, port)
 
