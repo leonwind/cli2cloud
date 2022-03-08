@@ -6,7 +6,6 @@ import { Navigate } from "react-router-dom";
 import logo from "../assets/cloudWhite.png";
 import SearchIcon from "@material-ui/icons/Search";
 import { InputGroup } from "react-bootstrap";
-import GitHubIcon from '@mui/icons-material/GitHub';
 
 interface State {
     clientID: string,
@@ -79,7 +78,6 @@ export class FrontPage extends Component<{}, State> {
                 <h6 className={styles.mediumText}>
                     Monitor and Share Your Terminal Output with Everyone from Everywhere in Realtime.
                 </h6>
-                
             </div>
         )
     }

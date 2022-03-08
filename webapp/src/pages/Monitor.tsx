@@ -17,6 +17,7 @@ interface State {
     enterPwdFirstTime: boolean,
     decryptor: DecryptionService | null,
     rows: Row[],
+    raw: boolean,
 }
 
 export class Monitor extends Component<{}, State> {
@@ -33,15 +34,17 @@ export class Monitor extends Component<{}, State> {
             decryptor: null,
             enterPwdFirstTime: true,
             rows: [],
+            raw: new URLSearchParams(new URL(window.location.href).search).has("raw"),
         };
-        
-        this.numLines = 0;
+
+        this.numLines = 1;
         this.cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null)
 
         const id = window.location.pathname.substring(1);
+        
         this.clientId = new ClientId();
         this.clientId.setId(id);
-        
+
         this.client = this.cli2CloudService.getClientById(this.clientId, {})
     }
 
@@ -50,6 +53,7 @@ export class Monitor extends Component<{}, State> {
         this.highlightRow = this.highlightRow.bind(this);
         this.updatePassword = this.updatePassword.bind(this);
         this.afterFirstTimePassword = this.afterFirstTimePassword.bind(this);
+        this.switchToRawData = this.switchToRawData.bind(this);
 
         this.client.then((client) => {this.setState({encrypted: client.getEncrypted()})});
         this.loadContent();
@@ -99,13 +103,22 @@ export class Monitor extends Component<{}, State> {
         return content; 
     }
 
-    private createDivsForAllRows(): JSX.Element[] {
-        // Since we decrypt everything again, we need to init the decryptor from the beginning
-        // as well.
+    private createNewDecryptorIfEncrypted() {
+        // Since we decrypt everything again from the beginning, 
+        // we need to init the decryptor from the beginning as well.
         if (this.state.decryptor !== null) {
             this.state.decryptor.createDecryptor();
         }
+    }
 
+    private createDivsForAllRows(): JSX.Element[] | JSX.Element {
+        if (this.state.rows.length === 0) {
+            return [<div className={styles.emptyRows}>
+                No output found for client "{this.clientId.getId()}".
+            </div>];
+        }
+
+        this.createNewDecryptorIfEncrypted() 
         return this.state.rows.map((row: Row) => 
             <div className={styles.row} id={row.line.toString()} key={row.line}>
                 <span className={styles.line} onClick={() => this.highlightRow(row.line)}>
@@ -118,17 +131,32 @@ export class Monitor extends Component<{}, State> {
         );
     }
 
+    private createDivsForRawOutput(): JSX.Element[] | JSX.Element {
+        if (this.state.rows.length === 0) {
+            return <div>No output found for client "{this.clientId.getId()}."</div>
+        }
+
+        this.createNewDecryptorIfEncrypted()
+        return this.state.rows.map((row: Row) => 
+            <div key={row.line}>{this.decryptRowIfEncrypted(row.content)}</div> 
+        );
+    }
+
+    private switchToRawData() {
+        let params = new URLSearchParams(new URL(window.location.href).search);
+        params.set("raw", "true");
+        window.location.search = params.toString()
+
+        this.setState({raw: true});
+    }
+
     private afterFirstTimePassword() {
         this.setState({enterPwdFirstTime: false});
     }
 
     render() {
-        let allRows: JSX.Element[];
-
-        if (this.state.rows.length === 0) {
-            allRows = [<div>No output found for client "{this.clientId.getId()}".</div>];
-        } else {
-            allRows = this.createDivsForAllRows();
+        if (this.state.raw) {
+            return this.createDivsForRawOutput()
         }
 
         return (
@@ -136,10 +164,10 @@ export class Monitor extends Component<{}, State> {
                 {this.state.encrypted && this.state.decryptor === null &&
                 <ChangeDecryptionPwd show={this.state.enterPwdFirstTime} onSubmit={this.updatePassword} onClose={this.afterFirstTimePassword}/>}
 
-                <NavBar showPasswordBtn={this.state.encrypted} onPasswordSubmit={this.updatePassword}/>
+                <NavBar showPasswordBtn={this.state.encrypted} onPasswordSubmit={this.updatePassword} switchToRawData={this.switchToRawData}/>
                 <div className={styles.body}>
                     <div className={styles.outputArea}>
-                        {allRows}
+                        {this.createDivsForAllRows()}
                     </div>
                 </div>
             </>

@@ -1,13 +1,13 @@
 import styles from "../styles/NavBar.module.css";
 import {SearchBar} from "./SearchBar";
-import { Container, Navbar } from "react-bootstrap";
+import { Navbar } from "react-bootstrap";
 import { Nav } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import { useState } from "react";
 import {ChangeDecryptionPwd} from "./ChangeDecryptionPwd"
 import logo from "../assets/cloudWhite.png";
 
-export const NavBar = ({showPasswordBtn, onPasswordSubmit}) => {
+export const NavBar = ({showPasswordBtn, onPasswordSubmit, switchToRawData}) => {
     const [showModal, setShowModal] = useState(false);
 
     const handleShowModal = () => setShowModal(true);
@@ -25,7 +25,7 @@ export const NavBar = ({showPasswordBtn, onPasswordSubmit}) => {
             <Nav className="ms-auto">
                 <SearchBar/>
 
-                <Button variant="dark" className={styles.buttons}>
+                <Button variant="dark" className={styles.buttons} onClick={switchToRawData}>
                     Raw
                 </Button>
 
@@ -34,6 +34,8 @@ export const NavBar = ({showPasswordBtn, onPasswordSubmit}) => {
                     Change Password
                 </Button>
                 }
+
+                
             </Nav>
             </Navbar.Collapse>
             
