@@ -24,7 +24,7 @@ SET default_table_access_method = heap;
 -- Name: cli_storage; Type: TABLE; Schema: public; Owner: cli2cloud
 --
 
-CREATE TABLE public.cli_storage (
+CREATE TABLE IF NOT EXISTS public.cli_storage (
     clientid text NOT NULL,
     content text NOT NULL,
     line integer NOT NULL
@@ -71,7 +71,7 @@ SET default_table_access_method = heap;
 -- Name: cli_storage; Type: TABLE; Schema: public; Owner: cli2cloud
 --
 
-CREATE TABLE public.cli_storage (
+CREATE TABLE IF NOT EXISTS public.cli_storage (
     clientid text NOT NULL,
     content text NOT NULL,
     line integer NOT NULL

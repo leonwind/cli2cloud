@@ -3,5 +3,8 @@
 set -e
 
 go build -o service
-sleep 10s
+
+# Wait 10s such that postgres is ready to connect clients
+sleep 15s
+
 ./service
