@@ -13,7 +13,10 @@ import (
 	"time"
 )
 
-const randomPasswordLength = 16
+const (
+	serverIP             = "167.99.140.19:50051"
+	randomPasswordLength = 16
+)
 
 type stringFlag struct {
 	set   bool
@@ -121,7 +124,7 @@ func parseFlags() *string {
 func main() {
 	password := parseFlags()
 
-	conn, err := grpc.Dial(":50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(serverIP, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("Unable to connect to gRPC server.", err)
 	}
