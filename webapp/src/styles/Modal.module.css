@@ -1,0 +1,31 @@
+.header {
+    background-color: #1c1c1c;
+    opacity: 0.9;
+    color: #ffffff;
+    border-color: #000000;
+}
+
+.body {
+    background-color: #1c1c1c;
+    color: #ffffff;
+    border-color: #000000;
+    opacity: 0.8;
+}
+
+.textField {
+    background-color: #000000 !important;
+    border: 0px;
+    color: #ffffff !important;
+}
+
+.submitButton {
+    background-color: orange;
+    color: #1c1c1c;
+    opacity: 0.9;
+    border: 0px;
+}
+.submitButton:hover{
+    background-color: orange;
+    color: #1c1c1c;
+    opacity: 0.6;
+}

@@ -9,21 +9,26 @@
     cursor: pointer;
     color: orange;
     opacity: 0.75;
+    font-weight: bold;
 }:target {
     opacity: 1;
+    font-weight: bolder;
 }
 
 .docsSubTitle {
     cursor: pointer;
     color: orange;
     opacity: 0.6;
+    font-weight: bold;
 }:target {
     opacity: 1;
+    font-weight: bolder;
 }
 
 .instruction {
     color: #ffffff;
-    opacity: 0.87;
+    opacity: 0.85;
+    padding-bottom: 1.5em;
 }
 
 .codeBlock {
@@ -35,7 +40,7 @@
 .codeStyle {
     font-family: monospace;
     color: #e7e7e7;
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 .spaceToBottom {

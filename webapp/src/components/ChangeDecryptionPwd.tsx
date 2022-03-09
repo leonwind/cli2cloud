@@ -1,5 +1,6 @@
 import {useState} from "react";
 import Modal from "react-bootstrap/Modal";
+import styles from "../styles/Modal.module.css";
 import { Button } from "react-bootstrap";
 import { Form } from "react-bootstrap";
 
@@ -19,27 +20,27 @@ export const ChangeDecryptionPwd = ({onSubmit, onClose, show}) => {
 
     return (
         <Modal show={show} onHide={onClose}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton className={styles.header}>
                 <Modal.Title>Enter Password</Modal.Title>
             </Modal.Header>
             
-            <Modal.Body>
+            <Modal.Body className={styles.body}>
                 <Form>
                     <Form.Group className="mb-3" controlId="formBasicPassword">
                         <Form.Label>Enter your Password to decrypt the output:</Form.Label>
-                        <Form.Control type="password" placeholder="Password" 
+                        <Form.Control type="password" placeholder="Password" className={styles.textField} 
                             value={password} 
                             onChange={e => setPassword(e.target.value)}/>
                     </Form.Group>
                 </Form>
             </Modal.Body>
             
-            <Modal.Footer>
+            <Modal.Footer className={styles.body}>
                 <Button variant="secondary" onClick={onClose}>
                     Close
                 </Button>
             
-                <Button variant="primary" onClick={() => {submitAndClose(password)}}>
+                <Button className={styles.submitButton} onClick={() => {submitAndClose(password)}}>
                     Update Password
                 </Button>
             </Modal.Footer>

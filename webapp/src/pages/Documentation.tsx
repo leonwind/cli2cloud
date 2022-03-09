@@ -13,15 +13,13 @@ export const Documentation = () => {
             </h3>
 
             <h6 className={styles.instruction}>
-                Install the client by running { }
+                Install the terminal client directly from the source: { }
                 <div className={styles.codeBlock}>
                     <code className={styles.codeStyle}>
-                    $ go get github.com/leonwind/cli2cloud/cli/cli2cloud 
+                        $ go install github.com/leonwind/cli2cloud/cli/cli2cloud 
                     </code>
                 </div>
             </h6>
-
-            <br/>
 
             <h3 className={styles.docsTitle} id={"examples"} onClick={() => {highlightElement("examples")}}>
                 # Examples 
@@ -45,6 +43,8 @@ export const Documentation = () => {
                     ...
                     </code>
                 </div>
+                and open <code className={styles.codeStyle}>https://cli2cloud.com/{"{your ID}"}</code> on any browser you have.
+                It will pipe both your <code className={styles.codeStyle}>Stdout</code> and your <code className={styles.codeStyle}>Stderr</code> output to the web.
             </h6>
             
             <h6 className={styles.docsSubTitle} id={"e2ee"} onClick={() => {highlightElement("e2ee")}}>
@@ -52,8 +52,8 @@ export const Documentation = () => {
             </h6>
             <h6 className={styles.instruction}>
                 Use the option <code className={styles.codeStyle}>-encrypt=password</code> {  }
-                to encrypt your data End-to-End using the <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_block_chaining_(CBC)">AES CBC mode</a> { }
-                and a 256 Bit key generated based on your password:
+                to encrypt your data End-to-End using the <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_block_chaining_(CBC)">AES CBC Mode</a> { }
+                and a 256 bit key generated based on your password using the <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a> function.
 
                 <div className={styles.codeBlock}>
                     <code className={styles.codeStyle}>
@@ -67,13 +67,16 @@ export const Documentation = () => {
                     ...
                     </code>
                 </div>
+                To decrypt the data on the web, you need to enter the same password again. 
+                The server does not store your password or the hash and thus does not know if your password is incorrect. 
+                If you enter a wrong password you will see complete garbage :) 
             </h6>
             
             <h3 className={styles.docsTitle} id={"feedback"} onClick={() => {highlightElement("feedback")}}>
                 # Feedback
             </h3>
             <h6 className={styles.instruction}>
-                The code is open-source available on <a href="https://github.com/leonwind/cli2cloud">GitHub</a>. <br/>
+                The code is open-source available on <a href="https://github.com/leonwind/cli2cloud">GitHub</a>.
                 Feel free to open a <a href="https://github.com/leonwind/cli2cloud/issues/new">new Issue</a> regarding any feedback or bugs.
             </h6>
 
