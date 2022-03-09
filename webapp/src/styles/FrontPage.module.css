@@ -12,15 +12,15 @@
 }
 
 .headline {
-    text-align: center;
     color: #e7e7e7;
     opacity: 0.87;
+    text-align: center;
 }
 
 .mediumText {
-    text-align: center;
     color: #e7e7e7;
     opacity: 0.6;
+    text-align: center;
 }
 
 .searchForm {

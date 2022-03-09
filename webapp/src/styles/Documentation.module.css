@@ -1,0 +1,53 @@
+.body {
+    padding-top: 10%;
+    width: 50%;
+    margin: auto; 
+    min-width: 300px;
+}
+
+.docsTitle {
+    cursor: pointer;
+    color: orange;
+    opacity: 0.75;
+}:target {
+    opacity: 1;
+}
+
+.docsSubTitle {
+    cursor: pointer;
+    color: orange;
+    opacity: 0.6;
+}:target {
+    opacity: 1;
+}
+
+.instruction {
+    color: #ffffff;
+    opacity: 0.87;
+}
+
+.codeBlock {
+    padding-left: 5%;
+    padding-top: 3%;
+    padding-bottom: 3%;
+}
+
+.codeStyle {
+    font-family: monospace;
+    color: #e7e7e7;
+    opacity: 0.6;
+}
+
+.spaceToBottom {
+    padding-bottom: 3em;
+}
+
+a {
+    color: orange;
+    opacity: 0.6;
+}
+
+a:hover {
+    color: orange;
+    opacity: 1;
+}

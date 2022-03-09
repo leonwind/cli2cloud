@@ -17,7 +17,7 @@ export const NavBar = ({showPasswordBtn, onPasswordSubmit, switchToRawData}) => 
         <>
         <Navbar className={styles.body} expand={"md"} variant={"dark"} collapseOnSelect>
             <Navbar.Brand className={styles.brand} href={"/"}>
-                <img src={logo} alt={"Logo"} width={"50"} height={"50"}/>
+                <img src={logo} alt={"Cli2Cloud"} width={"50"} height={"50"}/> 
             </Navbar.Brand>
 
             <Navbar.Toggle aria-controls="responsive-navbar-nav"/>

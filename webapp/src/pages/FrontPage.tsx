@@ -6,6 +6,7 @@ import { Navigate } from "react-router-dom";
 import logo from "../assets/cloudWhite.png";
 import SearchIcon from "@material-ui/icons/Search";
 import { InputGroup } from "react-bootstrap";
+import {Documentation} from "./Documentation"
 
 interface State {
     clientID: string,
@@ -43,7 +44,6 @@ export class FrontPage extends Component<{}, State> {
 
         return (
             <div className={styles.body}>
-
                 <h1 className={styles.logo}>
                     <img src={logo} alt={"Logo"} width={"100"} height={"100"}/>
                 </h1>
@@ -51,7 +51,6 @@ export class FrontPage extends Component<{}, State> {
                 <h1 className={styles.headline}>
                     Cli2Cloud
                 </h1>
-
 
                 <br/>
                 <br/>
@@ -78,6 +77,8 @@ export class FrontPage extends Component<{}, State> {
                 <h6 className={styles.mediumText}>
                     Monitor and Share Your Terminal Output with Everyone from Everywhere in Realtime.
                 </h6>
+
+                <Documentation/>
             </div>
         )
     }
