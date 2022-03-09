@@ -13,7 +13,7 @@ export const Documentation = () => {
             </h3>
 
             <h6 className={styles.instruction}>
-                Install the terminal client directly from the source: { }
+                Install the terminal client directly from the source by running
                 <div className={styles.codeBlock}>
                     <code className={styles.codeStyle}>
                         $ go get github.com/leonwind/cli2cloud/cli/cli2cloud 
@@ -43,6 +43,7 @@ export const Documentation = () => {
                     ...
                     </code>
                 </div>
+                <br/>
                 and open <code className={styles.codeStyle}>https://cli2cloud.com/{"{your ID}"}</code> on any browser you have.
                 It will pipe both your <code className={styles.codeStyle}>Stdout</code> and your <code className={styles.codeStyle}>Stderr</code> output to the web.
             </h6>
@@ -68,6 +69,8 @@ export const Documentation = () => {
                     ...
                     </code>
                 </div>
+                <br/>
+
                 To decrypt the data on the web, you need to enter the same password again. 
                 The server does not store your password or the hash of it and thus can't validate if your password is either correct or incorrect. 
                 You will see complete garbage if you enter a wrong password :)

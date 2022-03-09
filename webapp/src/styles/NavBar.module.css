@@ -1,9 +1,6 @@
 .body {
-    min-height: 45px;
-    max-height: 70px;
     top: 0;
     background-color: #282828;
-    padding: 20px;
     z-index: 999;
 }
 
@@ -15,4 +12,5 @@
 .buttons {
     background-color:transparent;
     border: 0px;
+    border-radius: 10px;
 }
