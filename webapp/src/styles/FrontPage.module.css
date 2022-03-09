@@ -21,10 +21,13 @@
     color: #e7e7e7;
     opacity: 0.6;
     text-align: center;
+    margin: auto;
+    max-width: 700px;
 }
 
 .searchForm {
     width: 50%; 
+    min-width: 350px;
     margin: auto;
     color: #ffffff !important;
     background-color: #333333 !important;

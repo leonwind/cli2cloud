@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+const randomPasswordLength = 16
+
 type stringFlag struct {
 	set   bool
 	value string
@@ -28,19 +30,15 @@ func (sf *stringFlag) String() string {
 	return sf.value
 }
 
-func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password stringFlag) error {
+func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *string) error {
 	stream, err := c.Publish(ctx)
 	if err != nil {
 		return err
 	}
 
 	var s *crypto.StreamEncrypter
-	if password.set {
-		if password.value == "" {
-			log.Fatal("Password cannot be empty.")
-		}
-
-		s, err = crypto.NewStreamEncrypter(password.value)
+	if password != nil {
+		s, err = crypto.NewStreamEncrypter(*password)
 		if err != nil {
 			log.Fatal("Can't create a Stream Encrypter.", err)
 		}
@@ -54,7 +52,7 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password st
 
 	clientId, err := c.RegisterClient(ctx, &client)
 	fmt.Printf("Your client ID: %s\n", clientId.Id)
-	fmt.Printf("Share and monitor it live from cli2cloud.com/%s\n\n", clientId.Id)
+	fmt.Printf("Share and monitor it live from https://cli2cloud.com/%s\n\n", clientId.Id)
 	// Wait 2 seconds for user to copy the client ID
 	time.Sleep(2 * time.Second)
 
@@ -89,10 +87,39 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password st
 	return err
 }
 
-func main() {
-	var password stringFlag
-	flag.Var(&password, "encrypt", "Password to encrypto your data with.")
+func parseFlags() *string {
+	var passwordFlag stringFlag
+	flag.Var(&passwordFlag, "encrypt", "Password to encrypt your data with.")
+	generatePassword := flag.Bool("encrypt-random", false, "Generate a random password to encrypt your data.")
 	flag.Parse()
+
+	if passwordFlag.set && passwordFlag.value == "" {
+		log.Fatal("Password can not be empty.")
+	}
+
+	if passwordFlag.set && *generatePassword {
+		log.Fatal("Can't set a password and generate one.")
+	}
+
+	var password *string = nil
+	var err error = nil
+
+	if passwordFlag.set {
+		password = &passwordFlag.value
+	} else if *generatePassword {
+		password, err = crypto.GeneratePassword(randomPasswordLength)
+		if err != nil {
+			log.Fatal("Error while generating the random password", err)
+		}
+
+		fmt.Printf("Your password: %s\n", *password)
+	}
+
+	return password
+}
+
+func main() {
+	password := parseFlags()
 
 	conn, err := grpc.Dial(":50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

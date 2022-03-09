@@ -78,6 +78,10 @@ export class FrontPage extends Component<{}, State> {
                     Monitor and Share Your Terminal Output with Everyone from Everywhere in Realtime.
                 </h6>
 
+                <br/>
+                <br/>
+                <br/>
+
                 <Documentation/>
             </div>
         )

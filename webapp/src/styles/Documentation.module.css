@@ -1,8 +1,7 @@
 .body {
-    padding-top: 10%;
     width: 50%;
     margin: auto; 
-    min-width: 300px;
+    min-width: 350px;
 }
 
 .docsTitle {
