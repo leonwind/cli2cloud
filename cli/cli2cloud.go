@@ -1,15 +1,15 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"flag"
 	"fmt"
+	"github.com/leonwind/cli2cloud/cli/crypto"
+	"github.com/leonwind/cli2cloud/cli/streams"
 	"github.com/leonwind/cli2cloud/service/api/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
-	"os"
 	"time"
 )
 
@@ -34,13 +34,13 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password st
 		return err
 	}
 
-	var s *StreamEncrypter
+	var s *crypto.StreamEncrypter
 	if password.set {
 		if password.value == "" {
 			log.Fatal("Password cannot be empty.")
 		}
 
-		s, err = NewStreamEncrypter(password.value)
+		s, err = crypto.NewStreamEncrypter(password.value)
 		if err != nil {
 			log.Fatal("Can't create a Stream Encrypter.", err)
 		}
@@ -58,10 +58,11 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password st
 	// Wait 2 seconds for user to copy the client ID
 	time.Sleep(2 * time.Second)
 
-	// TODO: Scan Stderr as well
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		row := scanner.Text()
+	// Create a messages stream which is reading from both Stdout and Stdin
+	streamMessages := make(chan string)
+	go streams.CreateStreams(streamMessages)
+
+	for row := range streamMessages {
 		// Print original input to client as well
 		fmt.Println(row)
 
