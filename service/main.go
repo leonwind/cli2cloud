@@ -53,7 +53,7 @@ func main() {
 		log.Fatal("Cant create server", err)
 	}
 
-	if err := service.Start(port); err != nil {
+	if err := service.Start("api/" + port); err != nil {
 		log.Fatal("Can't start server", err)
 	}
 }

@@ -38,7 +38,7 @@ export class Monitor extends Component<{}, State> {
         };
 
         this.numLines = 1;
-        this.cli2CloudService = new Cli2CloudClient("https://cli2cloud.com:8000", null, null);
+        this.cli2CloudService = new Cli2CloudClient("/api", null, null);
 
         const id = window.location.pathname.substring(1);
         
