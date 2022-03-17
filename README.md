@@ -12,7 +12,7 @@ Monitor and Share Your Terminal Output with Everyone from Everywhere in Realtime
 ## Installation
 Install the terminal client directly from the source by running
 ```bash
-go get github.com/leonwind/cli2cloud/cli/cli2cloud
+go install github.com/leonwind/cli2cloud/cli/cli2cloud@latest
 ```
 
 ## Examples

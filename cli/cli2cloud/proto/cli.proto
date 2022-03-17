@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option go_package = "github.com/leonwind/cli2cloud/cli/cli2cloud/proto";
+
+package proto;
+
+service Cli2Cloud {
+  rpc RegisterClient(Client) returns (ClientId);
+  rpc Publish(stream PublishRequest) returns (Empty);
+}
+
+message Client {
+  bool encrypted = 1;
+  optional string salt = 2;
+  optional string iv = 3;
+  optional int64 timestamp = 4;
+}
+
+message ClientId {
+  string Id = 1;
+}
+
+message PublishRequest {
+  ClientId clientId = 1;
+  Payload payload = 2;
+}
+
+message Payload {
+  string body = 1;
+}
+
+message Empty{}

@@ -2,8 +2,8 @@ package api
 
 import (
 	"fmt"
+	"github.com/leonwind/cli2cloud/service/api/proto"
 	"log"
-	"service/api/proto"
 	"time"
 )
 

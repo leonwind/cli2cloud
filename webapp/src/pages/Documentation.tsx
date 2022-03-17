@@ -16,7 +16,7 @@ export const Documentation = () => {
                 Install the terminal client directly from the source by running
                 <div className={styles.codeBlock}>
                     <code className={styles.codeStyle}>
-                        $ go get github.com/leonwind/cli2cloud/cli/cli2cloud 
+                        $ go install github.com/leonwind/cli2cloud/cli/cli2cloud@latest 
                     </code>
                 </div>
             </h6>

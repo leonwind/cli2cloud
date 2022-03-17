@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"github.com/jackc/pgx/v4/pgxpool"
-	. "service/internal"
+	. "github.com/leonwind/cli2cloud/service/internal"
 )
 
 type Database interface {

@@ -2,10 +2,10 @@ package api
 
 import (
 	"fmt"
+	"github.com/leonwind/cli2cloud/service/api/proto"
+	. "github.com/leonwind/cli2cloud/service/internal"
 	"io"
 	"log"
-	"service/api/proto"
-	. "service/internal"
 )
 
 func (s *Service) Publish(stream proto.Cli2Cloud_PublishServer) error {

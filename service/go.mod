@@ -1,4 +1,4 @@
-module service
+module github.com/leonwind/cli2cloud/service
 
 go 1.17
 
