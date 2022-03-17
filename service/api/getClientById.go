@@ -2,8 +2,8 @@ package api
 
 import (
 	"context"
+	"github.com/leonwind/cli2cloud/service/api/proto"
 	"log"
-	"service/api/proto"
 )
 
 func (s *Service) GetClientById(_ context.Context, clientId *proto.ClientId) (*proto.Client, error) {

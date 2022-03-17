@@ -1,11 +1,11 @@
 package api
 
 import (
+	"github.com/leonwind/cli2cloud/service/api/proto"
+	"github.com/leonwind/cli2cloud/service/internal/storage"
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	"service/api/proto"
-	"service/internal/storage"
 )
 
 type Service struct {

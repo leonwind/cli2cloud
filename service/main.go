@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/leonwind/cli2cloud/service/api"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
 	"os"
-	"service/api"
 )
 
 const configFile = "config.yaml"
