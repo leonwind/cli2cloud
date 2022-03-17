@@ -5,5 +5,3 @@ ENV POSTGRES_USER cli2cloud
 ENV POSTGRES_PASSWORD $POSTGRES_PASSWORD
 
 COPY create_schema.sql /docker-entrypoint-initdb.d 
-
-EXPOSE 5432

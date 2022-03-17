@@ -6,8 +6,8 @@ services:
     volumes:
       - ./management/postgres/postgres_data:/var/lib/postgresql/data
     build: ./management/postgres/
-    ports: 
-      - "5432:5432"
+    expose: 
+      - "5432"
     environment:
       - POSTGRES_USER=cli2cloud
       - POSTGRES_PASSWORD=$DB_PWD
