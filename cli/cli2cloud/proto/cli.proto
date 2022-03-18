@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/leonwind/service/api/proto";
+option go_package = "github.com/leonwind/cli2cloud/cli/cli2cloud/proto";
 
 package proto;
 
