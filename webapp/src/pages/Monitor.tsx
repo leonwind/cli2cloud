@@ -15,6 +15,7 @@ interface Row {
 interface State {
     encrypted: boolean,
     enterPwdFirstTime: boolean,
+    password: string | null,
     decryptor: DecryptionService | null,
     rows: Row[],
     raw: boolean,
@@ -31,18 +32,19 @@ export class Monitor extends Component<{}, State> {
 
         this.state = {
             encrypted: false,
+            enterPwdFirstTime: !(new URLSearchParams(new URL(window.location.href).search).has("key")),
+            password: new URLSearchParams(new URL(window.location.href).search).get("key"),
             decryptor: null,
-            enterPwdFirstTime: true,
             rows: [],
             raw: new URLSearchParams(new URL(window.location.href).search).has("raw"),
         };
 
         this.numLines = 1;
-        this.cli2CloudService = new Cli2CloudClient("https://cli2cloud.com:1443", null, null);
+        this.cli2CloudService = new Cli2CloudClient("https://cli2cloud.com:1443", null, null); // production
+        //this.cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null); // local dev
 
-        const id = window.location.pathname.substring(1);
-        
         this.clientId = new ClientId();
+        const id = window.location.pathname.substring(1);
         this.clientId.setId(id);
 
         this.client = this.cli2CloudService.getClientById(this.clientId, {})
@@ -56,16 +58,27 @@ export class Monitor extends Component<{}, State> {
         this.switchToRawData = this.switchToRawData.bind(this);
 
         this.client.then((client) => {this.setState({encrypted: client.getEncrypted()})});
+
+        if (!this.state.enterPwdFirstTime) {
+            this.createDecryptor();
+        }
+
         this.loadContent();
     }
 
     private updatePassword(newPassword: string) {
-        this.createDecryptor(newPassword);
+        this.setURLParams("key", newPassword);
+        this.setState({password: newPassword});
+        this.createDecryptor();
     }
 
-    private createDecryptor(password: string) {
+    private createDecryptor() {
+        if (this.state.password === null) {
+            console.log("Can't create decryptor");
+            return;
+        }
         this.client.then((client: Client) => {
-            this.setState({decryptor: new DecryptionService(password, client.getSalt(), client.getIv())});
+            this.setState({decryptor: new DecryptionService(this.state.password!, client.getSalt(), client.getIv())});
         });
     }
 
@@ -142,11 +155,14 @@ export class Monitor extends Component<{}, State> {
         );
     }
 
-    private switchToRawData() {
+    private setURLParams(key: string, value: string) {
         let params = new URLSearchParams(new URL(window.location.href).search);
-        params.set("raw", "true");
+        params.set(key, value);
         window.location.search = params.toString()
+    }
 
+    private switchToRawData() {
+        this.setURLParams("raw", "true");
         this.setState({raw: true});
     }
 

@@ -37,7 +37,7 @@ Use the `-encrypt {password}` option to encrypt your data End-to-End using the A
 ```bash
 $ ping google.com | cli2cloud -encrypt 1234
 Your client ID: CGYWdD
-Share and monitor it live from https://cli2cloud.com/CGYWdD
+Share and monitor it live from https://cli2cloud.com/CGYWdD?key=1234
 
 PING google.com (172.217.22.142): 56 data bytes
 64 bytes from 172.217.22.142: icmp_seq=0 ttl=112 time=14.154 ms
@@ -52,12 +52,12 @@ Use the option `-encrypt-random` to generate a random secure password with 16 sy
 $ ping google.com | cli2cloud -encrypt-random
 Your password: mruI3ubFXTww1QYf
 Your client ID: 56xY35
-Share and monitor it live from https://cli2cloud.com/56xY35
+Share and monitor it live from https://cli2cloud.com/56xY35?key=mruI3ubFXTww1QYf
 
 PING google.com (142.250.201.174): 56 data bytes
 64 bytes from 142.250.201.174: icmp_seq=0 ttl=116 time=3.322 ms
 64 bytes from 142.250.201.174: icmp_seq=1 ttl=116 time=2.648 ms
-...
+..mruI3ubFXTww1QYf.
 ```
 
 ## Feedback

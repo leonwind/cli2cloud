@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	serverIP             = "167.99.140.19:50051"
+	//serverIP             = "localhost:50051" // local dev
+	serverIP             = "167.99.140.19:50051" // production
 	randomPasswordLength = 16
 )
 
@@ -55,7 +56,13 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 
 	clientId, err := c.RegisterClient(ctx, &client)
 	fmt.Printf("Your client ID: %s\n", clientId.Id)
-	fmt.Printf("Share and monitor it live from https://cli2cloud.com/%s\n\n", clientId.Id)
+
+	keyURLSuffix := ""
+	if password != nil {
+		keyURLSuffix = fmt.Sprintf("?key=%s", *password)
+	}
+
+	fmt.Printf("Share and monitor it live from https://cli2cloud.com/%s%s\n\n", clientId.Id, keyURLSuffix)
 	// Wait 2 seconds for user to copy the client ID
 	time.Sleep(2 * time.Second)
 
@@ -114,7 +121,6 @@ func parseFlags() *string {
 		if err != nil {
 			log.Fatal("Error while generating the random password", err)
 		}
-
 		fmt.Printf("Your password: %s\n", *password)
 	}
 

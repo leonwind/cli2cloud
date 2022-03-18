@@ -61,7 +61,7 @@ export const Documentation = () => {
                     <code className={styles.codeStyle}>
                     $ ping google.com | cli2cloud -encrypt 1234 <br/>
                     Your client ID: CGYWdD <br/>
-                    Share and monitor it live from https://cli2cloud.com/CGYWdD <br/>
+                    Share and monitor it live from https://cli2cloud.com/CGYWdD?key=1234<br/>
                     <br/>
                     PING google.com (172.217.22.142): 56 data bytes <br/>
                     64 bytes from 172.217.22.142: icmp_seq=0 ttl=112 time=14.154 ms <br/>
@@ -82,7 +82,7 @@ export const Documentation = () => {
                     $ ping google.com | cli2cloud -encrypt-random <br/>
                     Your password: mruI3ubFXTww1QYf <br/>
                     Your client ID: 56xY35 <br/>
-                    Share and monitor it live from https://cli2cloud.com/56xY35 <br/>
+                    Share and monitor it live from https://cli2cloud.com/56xY35?key=mruI3ubFXTww1QYf<br/>
                     <br/>
                     PING google.com (142.250.201.174): 56 data bytes <br/>
                     64 bytes from 142.250.201.174: icmp_seq=0 ttl=116 time=3.322 ms <br/>
