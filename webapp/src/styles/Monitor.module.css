@@ -25,6 +25,14 @@
     color: #000000
 }
 
+.selectedRow {
+    background-color: yellow;
+    opacity: 0.8;
+    color: #000000;
+    display: flex;
+    clear: both;
+}
+
 .line {
     min-width: 5%;
     float: left;

@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	//serverIP             = "localhost:50051" // local dev
-	serverIP             = "167.99.140.19:50051" // production
+	serverIP = "localhost:50051" // local dev
+	//serverIP             = "cli2cloud.com:50051" // production
 	randomPasswordLength = 16
 )
 
