@@ -19,6 +19,7 @@ interface State {
     decryptor: DecryptionService | null,
     rows: Row[],
     raw: boolean,
+    highlightRow: string,
 }
 
 export class Monitor extends Component<{}, State> {
@@ -30,13 +31,29 @@ export class Monitor extends Component<{}, State> {
     constructor(props: any) {
         super(props);
 
+        // Redirect due to backward compatibility with old client which set the
+        // key as a query parameter(?key=) and not as a hash parameter (#key=)
+        let params = new URLSearchParams(new URL(window.location.href).search);
+        if (params.has("key")) {
+            const password = params.get("key");
+            if (password !== null) {
+                this.addToHashParam("key", password);
+            }
+            params.delete("key");
+            window.location.search = params.toString()
+        }
+        
+        let password = this.extractFromHash(window.location.hash, "key");
+        let highlightRowId = this.extractFromHash(window.location.hash, "row");
+
         this.state = {
             encrypted: false,
-            enterPwdFirstTime: !(new URLSearchParams(new URL(window.location.href).search).has("key")),
-            password: new URLSearchParams(new URL(window.location.href).search).get("key"),
+            enterPwdFirstTime: password === null,
+            password: password,
             decryptor: null,
             rows: [],
-            raw: new URLSearchParams(new URL(window.location.href).search).has("raw"),
+            raw: params.has("raw"),
+            highlightRow: highlightRowId === null ? "" : highlightRowId,
         };
 
         this.numLines = 1;
@@ -60,25 +77,67 @@ export class Monitor extends Component<{}, State> {
         this.client.then((client) => {this.setState({encrypted: client.getEncrypted()})});
 
         if (!this.state.enterPwdFirstTime) {
-            this.createDecryptor();
+            this.createDecryptor(this.state.password);
         }
 
         this.loadContent();
     }
 
-    private updatePassword(newPassword: string) {
-        this.setURLParams("key", newPassword);
-        this.setState({password: newPassword});
-        this.createDecryptor();
+    private extractFromHash(hash: string, key: string): string | null {
+        const params: string = hash.substring(1, hash.length);
+        let value: string | null = null;
+
+        params.split("&").forEach((parts, _) => {
+            let kv = parts.split("=");
+            if (kv !== [] && kv[0] === key) {
+                value = kv[1];
+            }
+        });
+        return value;
     }
 
-    private createDecryptor() {
-        if (this.state.password === null) {
+    private addToHashParam(key: string, value: string, remove: boolean=false) {
+        const newParamPair = key + "=" + value;
+        const currHash = window.location.hash.substring(1, window.location.hash.length);
+        let newHash = "";
+        let exists: boolean = false;
+
+        currHash.split("&").forEach((parts, _) => {
+            let kv = parts.split("=");
+            if (kv.length !== 0 && kv[0] !== '') {
+                if (kv[0] === key) {
+                    exists = true;
+                    if (remove) {
+                        return;
+                    }
+                    newHash += newParamPair;
+                } else {
+                    newHash += parts;
+                }
+                newHash += '&';
+            }
+        });
+        
+        if (!exists) {
+            newHash += newParamPair;
+        }
+
+        window.location.hash = newHash;
+    }
+
+    private updatePassword(newPassword: string) {
+        this.addToHashParam("key", newPassword);
+        this.setState({password: newPassword});
+        this.createDecryptor(newPassword);
+    }
+
+    private createDecryptor(password: string | null) {
+        if (password === null) {
             console.log("Can't create decryptor");
             return;
         }
         this.client.then((client: Client) => {
-            this.setState({decryptor: new DecryptionService(this.state.password!, client.getSalt(), client.getIv())});
+            this.setState({decryptor: new DecryptionService(password!, client.getSalt(), client.getIv())});
         });
     }
 
@@ -92,6 +151,8 @@ export class Monitor extends Component<{}, State> {
         stream.on("error", (error: Error): void => {
             console.error(error);
         });
+
+        
     }
 
     private addNewContent(content: string) {
@@ -106,7 +167,14 @@ export class Monitor extends Component<{}, State> {
     } 
 
     private highlightRow(line: number) {
-        window.location.hash = line.toString();
+        if (this.state.highlightRow === line.toString()) {
+            this.setState({highlightRow: ""});
+            // delete the hash parameter again if set
+            this.addToHashParam("row", "", true);
+        } else {
+            this.addToHashParam("row", line.toString());
+            this.setState({highlightRow: line.toString()});
+        }
     }
 
     private decryptRowIfEncrypted(content: string): string {
@@ -132,8 +200,10 @@ export class Monitor extends Component<{}, State> {
         }
 
         this.createNewDecryptorIfEncrypted() 
-        return this.state.rows.map((row: Row) => 
-            <div className={styles.row} id={row.line.toString()} key={row.line}>
+        return this.state.rows.map((row: Row) => {
+            let rowStyle = row.line.toString() === this.state.highlightRow ? styles.selectedRow : styles.row;
+
+            return <div className={rowStyle} id={row.line.toString()} key={row.line}>
                 <span className={styles.line} onClick={() => this.highlightRow(row.line)}>
                     {row.line}
                 </span>
@@ -141,7 +211,7 @@ export class Monitor extends Component<{}, State> {
                     {this.decryptRowIfEncrypted(row.content)}
                 </span>
             </div>
-        );
+        });
     }
 
     private createDivsForRawOutput(): JSX.Element[] | JSX.Element {
