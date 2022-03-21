@@ -59,7 +59,7 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 
 	keyURLSuffix := ""
 	if password != nil {
-		keyURLSuffix = fmt.Sprintf("?key=%s", *password)
+		keyURLSuffix = fmt.Sprintf("#key=%s", *password)
 	}
 
 	fmt.Printf("Share and monitor it live from https://cli2cloud.com/%s%s\n\n", clientId.Id, keyURLSuffix)

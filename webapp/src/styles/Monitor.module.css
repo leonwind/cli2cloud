@@ -19,12 +19,6 @@
     color: yellow;
 }
 
-.row:target {
-    background-color: yellow;
-    opacity: 0.8;
-    color: #000000
-}
-
 .selectedRow {
     background-color: yellow;
     opacity: 0.8;

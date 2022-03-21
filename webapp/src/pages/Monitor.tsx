@@ -30,9 +30,21 @@ export class Monitor extends Component<{}, State> {
 
     constructor(props: any) {
         super(props);
+
+        // Redirect due to backward compatibility with old client which set the
+        // key as a query parameter(?key=) and not as a hash parameter (#key=)
+        let params = new URLSearchParams(new URL(window.location.href).search);
+        if (params.has("key")) {
+            const password = params.get("key");
+            if (password !== null) {
+                this.addToHashParam("key", password);
+            }
+            params.delete("key");
+            window.location.search = params.toString()
+        }
+        
         let password = this.extractFromHash(window.location.hash, "key");
         let highlightRowId = this.extractFromHash(window.location.hash, "row");
-
 
         this.state = {
             encrypted: false,
@@ -40,7 +52,7 @@ export class Monitor extends Component<{}, State> {
             password: password,
             decryptor: null,
             rows: [],
-            raw: new URLSearchParams(new URL(window.location.href).search).has("raw"),
+            raw: params.has("raw"),
             highlightRow: highlightRowId === null ? "" : highlightRowId,
         };
 
@@ -74,11 +86,9 @@ export class Monitor extends Component<{}, State> {
     private extractFromHash(hash: string, key: string): string | null {
         const params: string = hash.substring(1, hash.length);
         let value: string | null = null;
-        console.log("params:", params); 
 
         params.split("&").forEach((parts, _) => {
             let kv = parts.split("=");
-            console.log(kv);
             if (kv !== [] && kv[0] === key) {
                 value = kv[1];
             }
@@ -86,7 +96,7 @@ export class Monitor extends Component<{}, State> {
         return value;
     }
 
-    private addToHashParam(key: string, value: string) {
+    private addToHashParam(key: string, value: string, remove: boolean=false) {
         const newParamPair = key + "=" + value;
         const currHash = window.location.hash.substring(1, window.location.hash.length);
         let newHash = "";
@@ -97,11 +107,13 @@ export class Monitor extends Component<{}, State> {
             if (kv.length !== 0 && kv[0] !== '') {
                 if (kv[0] === key) {
                     exists = true;
+                    if (remove) {
+                        return;
+                    }
                     newHash += newParamPair;
                 } else {
                     newHash += parts;
                 }
-                console.log("curr kv:", kv);
                 newHash += '&';
             }
         });
@@ -114,7 +126,6 @@ export class Monitor extends Component<{}, State> {
     }
 
     private updatePassword(newPassword: string) {
-        //this.setURLParams("key", newPassword);
         this.addToHashParam("key", newPassword);
         this.setState({password: newPassword});
         this.createDecryptor(newPassword);
@@ -140,6 +151,8 @@ export class Monitor extends Component<{}, State> {
         stream.on("error", (error: Error): void => {
             console.error(error);
         });
+
+        
     }
 
     private addNewContent(content: string) {
@@ -154,8 +167,14 @@ export class Monitor extends Component<{}, State> {
     } 
 
     private highlightRow(line: number) {
-        this.addToHashParam("row", line.toString());
-        this.setState({highlightRow: line.toString()});
+        if (this.state.highlightRow === line.toString()) {
+            this.setState({highlightRow: ""});
+            // delete the hash parameter again if set
+            this.addToHashParam("row", "", true);
+        } else {
+            this.addToHashParam("row", line.toString());
+            this.setState({highlightRow: line.toString()});
+        }
     }
 
     private decryptRowIfEncrypted(content: string): string {
@@ -182,7 +201,8 @@ export class Monitor extends Component<{}, State> {
 
         this.createNewDecryptorIfEncrypted() 
         return this.state.rows.map((row: Row) => {
-            let rowStyle = row.line.toString() == this.state.highlightRow ? styles.selectedRow : styles.row;
+            let rowStyle = row.line.toString() === this.state.highlightRow ? styles.selectedRow : styles.row;
+
             return <div className={rowStyle} id={row.line.toString()} key={row.line}>
                 <span className={styles.line} onClick={() => this.highlightRow(row.line)}>
                     {row.line}
