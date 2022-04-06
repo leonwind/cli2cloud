@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -17,6 +18,7 @@ const (
 	//serverIP = "localhost:50051" // local dev
 	serverIP             = "cli2cloud.com:50051" // production
 	randomPasswordLength = 16
+	defaultDelayLength   = 3
 )
 
 type stringFlag struct {
@@ -34,7 +36,7 @@ func (sf *stringFlag) String() string {
 	return sf.value
 }
 
-func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *string) error {
+func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *string, delay time.Duration) error {
 	stream, err := c.Publish(ctx)
 	if err != nil {
 		return err
@@ -63,8 +65,8 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 	}
 
 	fmt.Printf("Share and monitor it live from https://cli2cloud.com/%s%s\n\n", clientId.Id, keyURLSuffix)
-	// Wait 2 seconds for user to copy the client ID
-	time.Sleep(2 * time.Second)
+	// Wait delay seconds for user to copy the client ID
+	time.Sleep(delay * time.Second)
 
 	// Create a messages stream which is reading from both Stdout and Stdin
 	streamMessages := make(chan string)
@@ -97,10 +99,14 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 	return err
 }
 
-func parseFlags() *string {
+func parseFlags() (*string, time.Duration) {
 	var passwordFlag stringFlag
 	flag.Var(&passwordFlag, "encrypt", "Password to encrypt your data with.")
 	generatePassword := flag.Bool("encrypt-random", false, "Generate a random password to encrypt your data.")
+
+	var delayFlag stringFlag
+	flag.Var(&delayFlag, "delay", "Delay before printing the command output to copy the client ID.")
+
 	flag.Parse()
 
 	if passwordFlag.set && passwordFlag.value == "" {
@@ -124,11 +130,21 @@ func parseFlags() *string {
 		fmt.Printf("Your password: %s\n", *password)
 	}
 
-	return password
+	var delay int
+	if delayFlag.set {
+		delay, err = strconv.Atoi(delayFlag.value)
+		if err != nil || delay < 0 {
+			log.Fatal("Delay parameter argument is non parseable ", err)
+		}
+	} else {
+		delay = defaultDelayLength
+	}
+
+	return password, time.Duration(delay)
 }
 
 func main() {
-	password := parseFlags()
+	password, delay := parseFlags()
 
 	conn, err := grpc.Dial(serverIP, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -139,7 +155,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if err := sendPipedMessages(client, ctx, password); err != nil {
+	if err := sendPipedMessages(client, ctx, password, delay); err != nil {
 		log.Fatal("Error while sending to server.", err)
 	}
 
