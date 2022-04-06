@@ -57,8 +57,8 @@ export class Monitor extends Component<{}, State> {
         };
 
         this.numLines = 1;
-        this.cli2CloudService = new Cli2CloudClient("https://cli2cloud.com:1443", null, null); // production
-        //this.cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null); // local dev
+        //this.cli2CloudService = new Cli2CloudClient("https://cli2cloud.com:1443", null, null); // production
+        this.cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null); // local dev
 
         this.clientId = new ClientId();
         const id = window.location.pathname.substring(1);
@@ -161,7 +161,6 @@ export class Monitor extends Component<{}, State> {
             content: content,
             line: this.numLines,
         });
-
         this.numLines += 1
         this.setState({rows: newRows});
     } 
