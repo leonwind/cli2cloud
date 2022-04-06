@@ -1,4 +1,6 @@
 import {Component} from "react";
+import Ansi from "ansi-to-react";
+import hasAnsi from "has-ansi";
 import styles from "../styles/Monitor.module.css";
 import {Cli2CloudClient} from "../proto/ServiceServiceClientPb"
 import {Client, ClientId, Payload} from "../proto/service_pb"
@@ -57,8 +59,8 @@ export class Monitor extends Component<{}, State> {
         };
 
         this.numLines = 1;
-        //this.cli2CloudService = new Cli2CloudClient("https://cli2cloud.com:1443", null, null); // production
-        this.cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null); // local dev
+        this.cli2CloudService = new Cli2CloudClient("https://cli2cloud.com:1443", null, null); // production
+        //this.cli2CloudService = new Cli2CloudClient("http://localhost:8000", null, null); // local dev
 
         this.clientId = new ClientId();
         const id = window.location.pathname.substring(1);
@@ -191,6 +193,14 @@ export class Monitor extends Component<{}, State> {
         }
     }
 
+    private createAnsiElementIfNeeded(line: string): JSX.Element | string {
+        if (hasAnsi(line)) {
+            return <Ansi>{line}</Ansi>;
+        } else {
+            return line;
+        }
+    }
+
     private createDivsForAllRows(): JSX.Element[] | JSX.Element {
         if (this.state.rows.length === 0) {
             return [<div className={styles.emptyRows}>
@@ -207,7 +217,7 @@ export class Monitor extends Component<{}, State> {
                     {row.line}
                 </span>
                 <span className={styles.content}>
-                    {this.decryptRowIfEncrypted(row.content)}
+                    {this.createAnsiElementIfNeeded(this.decryptRowIfEncrypted(row.content))} 
                 </span>
             </div>
         });
