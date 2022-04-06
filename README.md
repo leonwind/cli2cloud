@@ -2,9 +2,8 @@
 
 
 <p align="center">
-<a href="https://cli2cloud.com">
-    <img src="webapp/src/assets/cloudWhite.png" width="128" alt="Cli2Cloud Logo"/>
-</a>
+<img src="webapp/src/assets/cloudWhite.png#gh-dark-mode-only" width="128" alt="Cli2Cloud Logo"/>
+<img src="webapp/src/assets/cloudBlack.png#gh-light-mode-only" width="128" alt="Cli2Cloud Logo"/>
 <br/>
 Monitor and Share Your Terminal Output with Everyone from Everywhere in Realtime.
 </p>
