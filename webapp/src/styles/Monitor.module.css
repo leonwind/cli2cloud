@@ -41,6 +41,7 @@
     padding-left: 3%;
     text-align: left;
     opacity: 0.87;
+    white-space: pre;
 }
 
 .emptyRows {
