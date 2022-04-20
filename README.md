@@ -56,7 +56,7 @@ Share and monitor it live from https://cli2cloud.com/56xY35#key=mruI3ubFXTww1QYf
 PING google.com (142.250.201.174): 56 data bytes
 64 bytes from 142.250.201.174: icmp_seq=0 ttl=116 time=3.322 ms
 64 bytes from 142.250.201.174: icmp_seq=1 ttl=116 time=2.648 ms
-..mruI3ubFXTww1QYf.
+...
 ```
 
 ## Feedback
