@@ -11,8 +11,6 @@ func readFromStreams(messages chan string, f *os.File) {
 		row := scanner.Text()
 		messages <- row
 	}
-
-	close(messages)
 }
 
 func CreateStreams(messages chan string) {

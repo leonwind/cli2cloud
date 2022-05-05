@@ -70,6 +70,7 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 
 	// Create a messages stream which is reading from both Stdout and Stdin
 	streamMessages := make(chan string)
+	defer close(streamMessages)
 	go streams.CreateStreams(streamMessages)
 
 	for row := range streamMessages {
