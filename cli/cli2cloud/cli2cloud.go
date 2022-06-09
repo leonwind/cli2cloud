@@ -69,30 +69,39 @@ func sendPipedMessages(c proto.Cli2CloudClient, ctx context.Context, password *s
 	time.Sleep(delay * time.Second)
 
 	// Create a messages stream which is reading from both Stdout and Stdin
-	streamMessages := make(chan string)
-	defer close(streamMessages)
+	streamMessages := make(chan interface{})
+	//defer close(streamMessages)
 	go streams.CreateStreams(streamMessages)
 
-	for row := range streamMessages {
-		// Print original input to client as well
-		fmt.Println(row)
+	for res := range streamMessages {
+		switch res.(type) {
+		case bool:
+			fmt.Println("Close channel")
+			//_, err = stream.CloseAndRecv()
+			//return err
+			break
+		default:
+			row := res.(string)
+			// Print original input to client as well
+			fmt.Println(row)
 
-		if s != nil {
-			encryptedRow, err := s.Encrypt(row)
-			if err != nil {
-				log.Println("Can't encrypt the data.", err)
+			if s != nil {
+				encryptedRow, err := s.Encrypt(row)
+				if err != nil {
+					log.Println("Can't encrypt the data.", err)
+					return err
+				}
+				row = *encryptedRow
+			}
+
+			content := proto.PublishRequest{
+				Payload:  &proto.Payload{Body: row},
+				ClientId: clientId,
+			}
+
+			if err := stream.Send(&content); err != nil {
 				return err
 			}
-			row = *encryptedRow
-		}
-
-		content := proto.PublishRequest{
-			Payload:  &proto.Payload{Body: row},
-			ClientId: clientId,
-		}
-
-		if err := stream.Send(&content); err != nil {
-			return err
 		}
 	}
 

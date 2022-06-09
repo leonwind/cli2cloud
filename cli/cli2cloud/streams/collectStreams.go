@@ -5,15 +5,16 @@ import (
 	"os"
 )
 
-func readFromStreams(messages chan string, f *os.File) {
+func readFromStreams(messages chan interface{}, f *os.File) {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		row := scanner.Text()
 		messages <- row
 	}
+	close(messages)
 }
 
-func CreateStreams(messages chan string) {
+func CreateStreams(messages chan interface{}) {
 	go readFromStreams(messages, os.Stdin)
-	go readFromStreams(messages, os.Stderr)
+	//go readFromStreams(messages, os.Stderr)
 }
